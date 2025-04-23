@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "GridManager.h"
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "GridGameGameMode.generated.h"
@@ -14,4 +15,11 @@ class GRIDGAMES_API AGridGameGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+	UPROPERTY(BlueprintReadOnly);
+	const AActor* GridManager;
 };
