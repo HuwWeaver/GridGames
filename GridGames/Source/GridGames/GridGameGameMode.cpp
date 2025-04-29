@@ -10,7 +10,7 @@ void AGridGameGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GridManager = UGameplayStatics::GetActorOfClass(GetWorld(), AGridManager::StaticClass());
+	GridManager = Cast<AGridManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AGridManager::StaticClass()));
 
-	UE_LOG(LogTemp, Warning, TEXT("GridManager: %s"), *GridManager->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("GridManager: %s"), *GridManager->GetActorNameOrLabel());
 }

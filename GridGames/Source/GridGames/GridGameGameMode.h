@@ -21,5 +21,5 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(BlueprintReadOnly);
-	const AActor* GridManager;
+	const AGridManager* GridManager;
 };
