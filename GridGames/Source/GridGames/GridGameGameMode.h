@@ -4,6 +4,7 @@
 
 #include "GridManager.h"
 #include "CoreMinimal.h"
+#include "GridTile.h"
 #include "GameFramework/GameModeBase.h"
 #include "GridGameGameMode.generated.h"
 
@@ -20,6 +21,19 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(BlueprintReadOnly);
+	UPROPERTY(BlueprintReadWrite);
 	const AGridManager* GridManager;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int Rows{ 8 };
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int Columns{ 8 };
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float TileSize{ 200.0f };
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AGridTile> GridTileClass;
+
+private:
+	void CreateGrid();
 };

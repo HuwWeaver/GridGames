@@ -23,4 +23,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int Rows{ 8 };
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int Columns{ 8 };
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float TileSize{ 200.0f };
+
 };
