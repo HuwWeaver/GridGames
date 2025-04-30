@@ -3,8 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GridCoordinates.h"
 #include "GameFramework/Actor.h"
 #include "GridTile.generated.h"
+
+class USceneComponent;
+class UStaticMeshComponent;
+class UTextRenderComponent;
+class UBoxComponent;
 
 UCLASS()
 class GRIDGAMES_API AGridTile : public AActor
@@ -15,12 +21,41 @@ public:
 	// Sets default values for this actor's properties
 	AGridTile();
 
+	UPROPERTY(BlueprintReadOnly)
+	USceneComponent* Root;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UStaticMeshComponent* TileMesh;
+
+	UPROPERTY(BlueprintReadOnly)
+	UTextRenderComponent* CoordinateDisplay;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UBoxComponent* CollisionBox;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FGridCoordinates Coordinates;
+
+	UPROPERTY(EditAnywhere)
+	UMaterialInstance* WhiteMaterial;
+
+	UPROPERTY(EditAnywhere)
+	UMaterialInstance* BlackMaterial;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool bOccupied{ false };
+
+	UPROPERTY(BlueprintReadWrite)
+	bool bValidMove{ false };
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
+	void Init(const FGridCoordinates& InCoordinates);
 };

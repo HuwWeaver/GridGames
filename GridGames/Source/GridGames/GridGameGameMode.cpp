@@ -4,6 +4,7 @@
 #include "Kismet/GameplayStatics.h"
 
 
+
 // Called when the game starts or when spawned
 void AGridGameGameMode::BeginPlay()
 {
@@ -23,8 +24,9 @@ void AGridGameGameMode::CreateGrid()
 			FRotator Rotation(0,0,0);
 			FActorSpawnParameters SpawnInfo;
 
-			GetWorld()->SpawnActor<AGridTile>(GridTileClass, Location, Rotation, SpawnInfo);
-			UE_LOG(LogTemp, Display, TEXT("Grid Piece Spawned At Location: %s"), *Location.ToCompactString());
+			AGridTile* Tile = GetWorld()->SpawnActor<AGridTile>(GridTileClass, Location, Rotation, SpawnInfo);
+			Tile->Init(FGridCoordinates(Column, Row));
+			//GridMap.Add(FGridCoordinates(Column, Row), Tile);
 		}
 	}
 

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "GridCoordinates.h"
 #include "GridManager.h"
 #include "CoreMinimal.h"
 #include "GridTile.h"
@@ -33,6 +34,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AGridTile> GridTileClass;
+
+	//UPROPERTY(BlueprintReadOnly)
+	//TMap<FGridCoordinates, AGridTile*> GridMap;
 
 private:
 	void CreateGrid();
