@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GridCoordinates.h"
 #include "GameFramework/Actor.h"
 #include "GridTile.generated.h"
 
@@ -37,9 +36,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	FGridCoordinates Coordinates;
-
 	UPROPERTY(EditAnywhere)
 	UMaterialInstance* WhiteMaterial;
 
@@ -52,10 +48,13 @@ protected:
 	UPROPERTY(BlueprintReadWrite)
 	bool bValidMove{ false };
 
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FVector Coordinates;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION(BlueprintCallable)
-	void Init(const FGridCoordinates& InCoordinates);
+	void Init(const FVector& InCoordinates);
 };

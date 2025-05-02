@@ -1,0 +1,61 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+
+#include "Engine/DataTable.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
+#include "GridGameData.generated.h"
+
+
+USTRUCT(BlueprintType)
+struct GRIDGAMES_API FGameSetup : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bWhite{ false };
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector StartingCoordinates{ 0,0,0 };
+};
+
+UENUM(BlueprintType)
+enum class EMovementTypes : uint8
+{
+	Step UMETA(DisplayName = "Step"),
+	LimitedRange UMETA(DisplayName = "LimitedRange"),
+	BoundlessRange UMETA(DisplayName = "BoundlessRange"),
+	Other UMETA(DisplayName = "Other")
+};
+
+USTRUCT(BlueprintType)
+struct GRIDGAMES_API FMoveProperties
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector MovementVector{ 0,0,0 };
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EMovementTypes MoveType{ EMovementTypes::Step };
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bCanCapture{ true };
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int RangeLimit{ 0 };
+};
+
+USTRUCT(BlueprintType)
+struct GRIDGAMES_API FPieceProperties : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FMoveProperties>	FullMoveList;
+};
+
+UCLASS()
+class GRIDGAMES_API UGridGameData : public UBlueprintFunctionLibrary
+{
+	GENERATED_BODY()
+	
+};

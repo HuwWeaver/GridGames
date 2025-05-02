@@ -2,10 +2,9 @@
 
 #pragma once
 
-#include "GridCoordinates.h"
-#include "GridManager.h"
 #include "CoreMinimal.h"
 #include "GridTile.h"
+#include "GamePiece.h"
 #include "GameFramework/GameModeBase.h"
 #include "GridGameGameMode.generated.h"
 
@@ -15,29 +14,37 @@
 UCLASS()
 class GRIDGAMES_API AGridGameGameMode : public AGameModeBase
 {
-	GENERATED_BODY()
-	
+	GENERATED_BODY()	
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(BlueprintReadWrite);
-	const AGridManager* GridManager;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int GridRows{ 8 };
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int GridColumns{ 8 };
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int GridLayers{ 1 };
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int Rows{ 8 };
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int Columns{ 8 };
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float TileSize{ 200.0f };
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AGridTile> GridTileClass;
+	UPROPERTY(BlueprintReadOnly)
+	TMap<FVector, AGridTile*> GridMap;
 
-	//UPROPERTY(BlueprintReadOnly)
-	//TMap<FGridCoordinates, AGridTile*> GridMap;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AGamePiece> GamePieceClass;
+
+	UPROPERTY(EditDefaultsOnly)
+	UDataTable* SetupData;
+
+	UPROPERTY(EditDefaultsOnly)
+	UDataTable* PiecesData;
 
 private:
 	void CreateGrid();
+	void PopulateBoard();
 };

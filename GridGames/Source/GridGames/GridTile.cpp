@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "GridTile.h"
+#include "Math/UnrealMathUtility.h"
 #include "Components/SceneComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -48,12 +49,12 @@ void AGridTile::Tick(float DeltaTime)
 
 }
 
-void AGridTile::Init(const FGridCoordinates& InCoordinates)
+void AGridTile::Init(const FVector& InCoordinates)
 {
 	Coordinates = InCoordinates;
-	CoordinateDisplay->SetText(FText::FromString(FString::Printf(TEXT("(%i,%i)"), Coordinates.X, Coordinates.Y)));
+	CoordinateDisplay->SetText(FText::FromString(FString::Printf(TEXT("(%i,%i)"), FMath::RoundToInt(Coordinates.X), FMath::RoundToInt(Coordinates.Y))));
 
-	if ((Coordinates.X + Coordinates.Y) % 2 == 0)
+	if (FMath::RoundToInt(Coordinates.X + Coordinates.Y) % 2 == 0)
 	{
 		TileMesh->SetMaterial(0, WhiteMaterial);
 	}
