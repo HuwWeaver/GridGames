@@ -43,7 +43,7 @@ void AGridGameGameMode::PopulateBoard()
 
 	for (FName RowName : SetupDataRows)
 	{
-		FGameSetup* Row = SetupData->FindRow<FGameSetup>(RowName, "");
+		FPieceSetupProperties* Row = SetupData->FindRow<FPieceSetupProperties>(RowName, "");
 
 		//X and Y are swapped for first vector as grid X axis doesn't follow world X axis, but rather follows world Y (and vice versa).
 		FVector Location = FVector(Row->StartingCoordinates.Y * TileSize, Row->StartingCoordinates.X * TileSize, 0.0) + FVector(TileSize / 2, TileSize / 2, 100);
@@ -60,7 +60,7 @@ void AGridGameGameMode::PopulateBoard()
 		}
 
 		FText PieceName = FText::FromString(StringName);
-		FPieceProperties* MoveData = PiecesData->FindRow<FPieceProperties>(UKismetStringLibrary::Conv_StringToName(StringName), "");
+		FPieceMovementData* MoveData = PiecesData->FindRow<FPieceMovementData>(UKismetStringLibrary::Conv_StringToName(StringName), "");
 
 		Piece->Init(PieceName, *Row, *MoveData);
 	}

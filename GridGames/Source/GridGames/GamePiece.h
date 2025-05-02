@@ -24,17 +24,11 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	USceneComponent* Root;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly)
 	UStaticMeshComponent* PieceMesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly)
 	UTextRenderComponent* NameDisplay;
-
-	UPROPERTY(EditAnywhere)
-	UMaterialInstance* WhiteMaterial;
-
-	UPROPERTY(EditAnywhere)
-	UMaterialInstance* BlackMaterial;
 
 protected:
 	// Called when the game starts or when spawned
@@ -44,16 +38,16 @@ protected:
 	FVector CurrentCoordinate{0,0,0};
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int MovesMade{ 0 };
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	FGameSetup StartingProperties;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	FPieceProperties MovementData;
+	UPROPERTY(BlueprintReadOnly)
+	FPieceSetupProperties SetupProperties;
+	UPROPERTY(BlueprintReadOnly)
+	FPieceMovementData MovementData;
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void Init(const FText& Name, const FGameSetup& SetupProperties, const FPieceProperties& MoveData);
+	void Init(const FText& Name, const FPieceSetupProperties& SetupData, const FPieceMovementData& MoveData);
 
 	UFUNCTION(BlueprintCallable)
 	void Move(const AGridTile* TargetTile, const float& TileSize);

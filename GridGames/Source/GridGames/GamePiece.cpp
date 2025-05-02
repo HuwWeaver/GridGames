@@ -43,21 +43,24 @@ void AGamePiece::Tick(float DeltaTime)
 
 }
 
-void AGamePiece::Init(const FText& Name, const FGameSetup& SetupProperties, const FPieceProperties& MoveData)
+void AGamePiece::Init(const FText& Name, const FPieceSetupProperties& SetupData, const FPieceMovementData& MoveData)
 {
 	NameDisplay->SetText(Name);
-	StartingProperties = SetupProperties;
-	CurrentCoordinate = StartingProperties.StartingCoordinates;
+	SetupProperties = SetupData;
+	CurrentCoordinate = SetupProperties.StartingCoordinates;
 	MovementData = MoveData;
 
-	if (StartingProperties.bWhite)
+	PieceMesh->SetStaticMesh(SetupProperties.PieceMesh);
+	PieceMesh->SetCollisionObjectType(ECC_GameTraceChannel1);
+	PieceMesh->SetMaterial(0, SetupProperties.Material);
+
+	if (SetupProperties.bWhite)
 	{
-		PieceMesh->SetMaterial(0, WhiteMaterial);
+
 		NameDisplay->SetTextRenderColor(FColor(0, 0, 0));
 	}
 	else
 	{
-		PieceMesh->SetMaterial(0, BlackMaterial);
 		NameDisplay->SetTextRenderColor(FColor(255, 255, 255));
 	}
 }

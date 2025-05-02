@@ -10,7 +10,7 @@
 
 
 USTRUCT(BlueprintType)
-struct GRIDGAMES_API FGameSetup : public FTableRowBase
+struct GRIDGAMES_API FPieceSetupProperties : public FTableRowBase
 {
 	GENERATED_BODY()
 
@@ -18,6 +18,10 @@ struct GRIDGAMES_API FGameSetup : public FTableRowBase
 	bool bWhite{ false };
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector StartingCoordinates{ 0,0,0 };
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMesh* PieceMesh{ nullptr };
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UMaterialInstance* Material;
 };
 
 UENUM(BlueprintType)
@@ -30,7 +34,7 @@ enum class EMovementTypes : uint8
 };
 
 USTRUCT(BlueprintType)
-struct GRIDGAMES_API FMoveProperties
+struct GRIDGAMES_API FPieceMovementProperties
 {
 	GENERATED_BODY()
 
@@ -45,12 +49,12 @@ struct GRIDGAMES_API FMoveProperties
 };
 
 USTRUCT(BlueprintType)
-struct GRIDGAMES_API FPieceProperties : public FTableRowBase
+struct GRIDGAMES_API FPieceMovementData : public FTableRowBase
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FMoveProperties>	FullMoveList;
+	TArray<FPieceMovementProperties> FullMoveList;
 };
 
 UCLASS()
