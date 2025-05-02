@@ -12,12 +12,14 @@ AGamePiece::AGamePiece()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	RootComponent = Root;
+	//Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	//RootComponent = Root;
 	
 	PieceMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PieceMesh"));
-	PieceMesh->SetupAttachment(Root);
+	//RootComponent = PieceMesh;
+	//PieceMesh->SetupAttachment(Root);
 	PieceMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 50.0f));
+	PieceMesh->SetSimulatePhysics(false);
 
 	NameDisplay = CreateDefaultSubobject<UTextRenderComponent>(TEXT("PieceName"));
 	NameDisplay->SetupAttachment(PieceMesh);
@@ -53,6 +55,7 @@ void AGamePiece::Init(const FText& Name, const FPieceSetupProperties& SetupData,
 	PieceMesh->SetStaticMesh(SetupProperties.PieceMesh);
 	PieceMesh->SetCollisionObjectType(ECC_GameTraceChannel1);
 	PieceMesh->SetMaterial(0, SetupProperties.Material);
+	PieceMesh->SetSimulatePhysics(true);
 
 	if (SetupProperties.bWhite)
 	{
@@ -68,7 +71,10 @@ void AGamePiece::Init(const FText& Name, const FPieceSetupProperties& SetupData,
 void AGamePiece::Move(const AGridTile* TargetTile, const float& TileSize)
 {
 	FVector TargetLocation = TargetTile->GetActorLocation() + FVector(TileSize / 2, TileSize / 2, 100);
-	SetActorLocation(TargetLocation);
+
+	SetActorLocation(TargetLocation, false, 0, ETeleportType::ResetPhysics);
+
+	UE_LOG(LogTemp, Warning, TEXT("Target Location: %s"), *TargetLocation.ToString());
 
 	CurrentCoordinate = TargetTile->Coordinates;
 

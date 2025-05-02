@@ -27,7 +27,7 @@ void AGridGameGameMode::CreateGrid()
 
 			AGridTile* Tile = GetWorld()->SpawnActor<AGridTile>(GridTileClass, Location, Rotation, SpawnInfo);
 			Tile->Init(FVector(Column, Row, 0));
-			GridMap.Add(FVector(Row, Column, 0), Tile);
+			GridMap.Add(FVector(Column, Row, 0), Tile);
 		}
 	}
 

@@ -21,10 +21,10 @@ public:
 	// Sets default values for this actor's properties
 	AGamePiece();
 
-	UPROPERTY(BlueprintReadOnly)
-	USceneComponent* Root;
+	//UPROPERTY(BlueprintReadOnly)
+	//USceneComponent* Root;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* PieceMesh;
 
 	UPROPERTY(BlueprintReadOnly)
