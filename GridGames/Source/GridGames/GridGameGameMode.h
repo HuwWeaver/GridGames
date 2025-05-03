@@ -7,9 +7,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "GridGameGameMode.generated.h"
 
-/**
- * 
- */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPieceMoved);
+
 UCLASS()
 class GRIDGAMES_API AGridGameGameMode : public AGameModeBase
 {
@@ -44,14 +43,22 @@ protected:
 	UDataTable* PiecesData;
 
 private:
+	TArray<AGridTile*> ValidTiles;
+
 	void CreateGrid();
 	void PopulateBoard();
 
-	void StepMove(TArray<AGridTile*>& ValidTiles, const AGamePiece* Piece, const FPieceMovementProperties& Move);
-	void RangeMove(TArray<AGridTile*>& ValidTiles, const AGamePiece* Piece, const FPieceMovementProperties& Move, const int& RangeLimit = -99);
-	void OtherMove(TArray<AGridTile*>& ValidTiles, const AGamePiece* Piece, const FPieceMovementProperties& Move);
+	void StepMove(const AGamePiece* Piece, const FPieceMovementProperties& Move);
+	void RangeMove(const AGamePiece* Piece, const FPieceMovementProperties& Move, const int& RangeLimit = -99);
+	virtual void OtherMove(const AGamePiece* Piece, const FPieceMovementProperties& Move);
 
 public:
 	UFUNCTION(BlueprintCallable)
+	void TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile);
+
+	UFUNCTION(BlueprintCallable)
 	void OnPieceSelected(AGamePiece* Piece);
+
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FPieceMoved PieceMoved;
 };

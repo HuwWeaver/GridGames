@@ -27,7 +27,7 @@ AGridTile::AGridTile()
 	CoordinateDisplay->SetRelativeLocation(FVector(-100.0f, 100.0f, 10.0f));
 	CoordinateDisplay->SetHorizontalAlignment(EHTA_Center);
 	CoordinateDisplay->SetVerticalAlignment(EVRTA_TextCenter);
-	CoordinateDisplay->SetWorldSize(50.0f);
+	CoordinateDisplay->SetWorldSize(75.0f);
 
 	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
 	CollisionBox->SetupAttachment(TileMesh);
@@ -74,7 +74,7 @@ void AGridTile::ShowValidMove(bool bShow)
 	{
 		if (bOccupied)
 		{
-			CoordinateDisplay->SetTextRenderColor(FColor(0, 0, 255));
+			CoordinateDisplay->SetTextRenderColor(FColor(255, 0, 0));
 		}
 		else
 		{
@@ -82,4 +82,6 @@ void AGridTile::ShowValidMove(bool bShow)
 		}
 	}
 }
+
+
 

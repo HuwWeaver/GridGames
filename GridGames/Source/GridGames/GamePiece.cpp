@@ -12,12 +12,8 @@ AGamePiece::AGamePiece()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	//Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	//RootComponent = Root;
-	
 	PieceMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PieceMesh"));
-	//RootComponent = PieceMesh;
-	//PieceMesh->SetupAttachment(Root);
+	RootComponent = PieceMesh;
 	PieceMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 50.0f));
 	PieceMesh->SetSimulatePhysics(false);
 
@@ -71,14 +67,14 @@ void AGamePiece::Init(const FText& Name, const FPieceSetupProperties& SetupData,
 void AGamePiece::Move(const AGridTile* TargetTile, const float& TileSize)
 {
 	FVector TargetLocation = TargetTile->GetActorLocation() + FVector(TileSize / 2, TileSize / 2, 100);
-
 	SetActorLocation(TargetLocation, false, 0, ETeleportType::ResetPhysics);
-
-	UE_LOG(LogTemp, Warning, TEXT("Target Location: %s"), *TargetLocation.ToString());
 
 	CurrentCoordinate = TargetTile->Coordinates;
 
 	MovesMade++;
+}
 
-	UE_LOG(LogTemp, Display, TEXT("Piece Moved!"));
+void AGamePiece::PieceCaptured()
+{
+	Destroy();
 }

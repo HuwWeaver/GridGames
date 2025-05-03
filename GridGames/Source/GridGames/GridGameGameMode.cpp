@@ -68,9 +68,16 @@ void AGridGameGameMode::PopulateBoard()
 	UE_LOG(LogTemp, Display, TEXT("Board Populated!"));
 }
 
-void AGridGameGameMode::StepMove(TArray<AGridTile*>& ValidTiles, const AGamePiece* Piece, const FPieceMovementProperties& Move)
+void AGridGameGameMode::StepMove(const AGamePiece* Piece, const FPieceMovementProperties& Move)
 {
 	FVector TargetCoordinate = Piece->GetCurrentCoordinate() + Move.MovementVector;
+
+	if (!GridMap.Contains(TargetCoordinate))
+	{
+		//Target Tile is out of bounds = Invalid Move
+		return;
+	}
+
 	AGridTile& TargetTile = *GridMap.FindRef(TargetCoordinate);
 	if (!TargetTile.GetOccupied())
 	{
@@ -104,7 +111,7 @@ void AGridGameGameMode::StepMove(TArray<AGridTile*>& ValidTiles, const AGamePiec
 	return;
 }
 
-void AGridGameGameMode::RangeMove(TArray<AGridTile*>& ValidTiles, const AGamePiece* Piece, const FPieceMovementProperties& Move, const int& RangeLimit)
+void AGridGameGameMode::RangeMove(const AGamePiece* Piece, const FPieceMovementProperties& Move, const int& RangeLimit)
 {
 	FVector TargetCoordinate = Piece->GetCurrentCoordinate() + Move.MovementVector;
 	int RangeLeft = RangeLimit - 1;
@@ -166,14 +173,35 @@ void AGridGameGameMode::RangeMove(TArray<AGridTile*>& ValidTiles, const AGamePie
 	}
 }
 
-void AGridGameGameMode::OtherMove(TArray<AGridTile*>& ValidTiles, const AGamePiece* Piece, const FPieceMovementProperties& Move)
+void AGridGameGameMode::OtherMove(const AGamePiece* Piece, const FPieceMovementProperties& Move)
 {
+}
+
+void AGridGameGameMode::TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile)
+{
+	if (ValidTiles.Contains(TargetTile))
+	{
+		if (TargetTile->GetOccupied())
+		{
+			TargetTile->GetOccupyingPiece()->PieceCaptured();
+		}
+
+		Piece->Move(TargetTile, TileSize);
+		PieceMoved.Broadcast();
+
+		for (AGridTile* Tile : ValidTiles)
+		{
+			Tile->ShowValidMove(false);
+		}
+
+		ValidTiles.Empty();
+	}
 }
 
 void AGridGameGameMode::OnPieceSelected(AGamePiece* Piece)
 {
 	FPieceMovementData& MovementData = Piece->MovementData;
-	TArray<AGridTile*> ValidTiles;
+	ValidTiles.Empty();
 
 	for (FPieceMovementProperties& Move : MovementData.FullMoveList)
 	{
@@ -183,19 +211,19 @@ void AGridGameGameMode::OnPieceSelected(AGamePiece* Piece)
 			break;
 
 		case EMovementTypes::Step:
-			StepMove(ValidTiles, Piece, Move);
+			StepMove(Piece, Move);
 			break;
 
 		case EMovementTypes::LimitedRange:
-			RangeMove(ValidTiles, Piece, Move, Move.RangeLimit);
+			RangeMove(Piece, Move, Move.RangeLimit);
 			break;
 
 		case EMovementTypes::BoundlessRange:
-			RangeMove(ValidTiles, Piece, Move);
+			RangeMove(Piece, Move);
 			break;
 
 		case EMovementTypes::Other:
-			OtherMove(ValidTiles, Piece, Move);
+			OtherMove(Piece, Move);
 			break;
 		}
 	}

@@ -47,8 +47,6 @@ private:
 protected:
 	UPROPERTY(BlueprintReadWrite)
 	bool bOccupied{ false };
-	UPROPERTY(BlueprintReadWrite)
-	bool bValidMove{ false };
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)

@@ -21,9 +21,6 @@ public:
 	// Sets default values for this actor's properties
 	AGamePiece();
 
-	//UPROPERTY(BlueprintReadOnly)
-	//USceneComponent* Root;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* PieceMesh;
 
@@ -57,4 +54,6 @@ public:
 
 	FVector GetCurrentCoordinate() const { return CurrentCoordinate; };
 	FPieceSetupProperties GetSetupProperties() const { return SetupProperties; };
+
+	void PieceCaptured();
 };
