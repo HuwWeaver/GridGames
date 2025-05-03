@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GridTile.h"
 #include "GamePiece.h"
 #include "GameFramework/GameModeBase.h"
 #include "GridGameGameMode.generated.h"
@@ -47,4 +46,12 @@ protected:
 private:
 	void CreateGrid();
 	void PopulateBoard();
+
+	void StepMove(TArray<AGridTile*>& ValidTiles, const AGamePiece* Piece, const FPieceMovementProperties& Move);
+	void RangeMove(TArray<AGridTile*>& ValidTiles, const AGamePiece* Piece, const FPieceMovementProperties& Move, const int& RangeLimit = -99);
+	void OtherMove(TArray<AGridTile*>& ValidTiles, const AGamePiece* Piece, const FPieceMovementProperties& Move);
+
+public:
+	UFUNCTION(BlueprintCallable)
+	void OnPieceSelected(AGamePiece* Piece);
 };

@@ -64,3 +64,22 @@ void AGridTile::Init(const FVector& InCoordinates)
 	}
 }
 
+void AGridTile::ShowValidMove(bool bShow)
+{
+	if (bShow)
+	{
+		CoordinateDisplay->SetTextRenderColor(FColor(0, 255, 0));
+	}
+	else
+	{
+		if (bOccupied)
+		{
+			CoordinateDisplay->SetTextRenderColor(FColor(0, 0, 255));
+		}
+		else
+		{
+			CoordinateDisplay->SetTextRenderColor(FColor(255, 255, 255));
+		}
+	}
+}
+

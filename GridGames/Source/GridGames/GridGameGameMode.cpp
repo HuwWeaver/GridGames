@@ -3,7 +3,7 @@
 #include "GridGameGameMode.h"
 #include "GridGameData.h"
 #include "Kismet/KismetStringLibrary.h"
-#include "Kismet/DataTableFunctionLibrary.h"
+#include "Kismet/BlueprintMapLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
 // Called when the game starts or when spawned
@@ -66,4 +66,142 @@ void AGridGameGameMode::PopulateBoard()
 	}
 
 	UE_LOG(LogTemp, Display, TEXT("Board Populated!"));
+}
+
+void AGridGameGameMode::StepMove(TArray<AGridTile*>& ValidTiles, const AGamePiece* Piece, const FPieceMovementProperties& Move)
+{
+	FVector TargetCoordinate = Piece->GetCurrentCoordinate() + Move.MovementVector;
+	AGridTile& TargetTile = *GridMap.FindRef(TargetCoordinate);
+	if (!TargetTile.GetOccupied())
+	{
+		//Empty Tile = Valid Move
+		ValidTiles.Add(&TargetTile);
+		return;
+	}
+
+	AGamePiece* OccupyingPiece = TargetTile.GetOccupyingPiece();
+	if (OccupyingPiece == nullptr)
+	{
+		UE_LOG(LogTemp, Fatal, TEXT("OccupyingPiece is nullptr"));
+		return;
+	}
+
+	if (OccupyingPiece->SetupProperties.bWhite == Piece->SetupProperties.bWhite)
+	{
+		//Tile Occupied by Same Team = Invalid Move
+		return;
+	}
+
+	if (Move.bCanCapture)
+	{
+		//Tile occupied by opposing team &&
+		//Move can capture = Valid Move
+		ValidTiles.Add(&TargetTile);
+		return;
+	}
+
+	//Move cannot capture = Invalid Move
+	return;
+}
+
+void AGridGameGameMode::RangeMove(TArray<AGridTile*>& ValidTiles, const AGamePiece* Piece, const FPieceMovementProperties& Move, const int& RangeLimit)
+{
+	FVector TargetCoordinate = Piece->GetCurrentCoordinate() + Move.MovementVector;
+	int RangeLeft = RangeLimit - 1;
+
+	while (GridMap.Contains(TargetCoordinate))
+	{
+		AGridTile& TargetTile = *GridMap.FindRef(TargetCoordinate);
+
+		if (!TargetTile.GetOccupied())
+		{
+			//Empty Tile = Valid Move
+			ValidTiles.Add(&TargetTile);
+
+			if (RangeLimit == -99)
+			{
+				//No Range Limit Specified - Boundless Range
+				//Move to Next Tile
+				TargetCoordinate = TargetCoordinate + Move.MovementVector;
+				continue;
+			}
+
+			if (RangeLeft <= 0)
+			{
+				//Range Limit Reached
+				return;
+			}
+			else
+			{
+				//Range Remaining - Move to Next Tile
+				TargetCoordinate = TargetCoordinate + Move.MovementVector;
+				RangeLeft--;
+				continue;
+			}
+		}
+
+		AGamePiece* OccupyingPiece = TargetTile.GetOccupyingPiece();
+		if (OccupyingPiece == nullptr)
+		{
+			UE_LOG(LogTemp, Fatal, TEXT("OccupyingPiece is nullptr"));
+			return;
+		}
+
+		if (OccupyingPiece->GetSetupProperties().bWhite == Piece->SetupProperties.bWhite)
+		{
+			//Tile Occupied by Same Team = Invalid Move
+			return;
+		}
+
+		if (Move.bCanCapture)
+		{
+			//Tile occupied by opposing team &&
+			//Move can capture = Valid Move
+			ValidTiles.Add(&TargetTile);
+			return;
+		}
+
+		//Move cannot capture = Invalid Move
+		return;
+	}
+}
+
+void AGridGameGameMode::OtherMove(TArray<AGridTile*>& ValidTiles, const AGamePiece* Piece, const FPieceMovementProperties& Move)
+{
+}
+
+void AGridGameGameMode::OnPieceSelected(AGamePiece* Piece)
+{
+	FPieceMovementData& MovementData = Piece->MovementData;
+	TArray<AGridTile*> ValidTiles;
+
+	for (FPieceMovementProperties& Move : MovementData.FullMoveList)
+	{
+		switch (Move.MoveType)
+		{
+		default:
+			break;
+
+		case EMovementTypes::Step:
+			StepMove(ValidTiles, Piece, Move);
+			break;
+
+		case EMovementTypes::LimitedRange:
+			RangeMove(ValidTiles, Piece, Move, Move.RangeLimit);
+			break;
+
+		case EMovementTypes::BoundlessRange:
+			RangeMove(ValidTiles, Piece, Move);
+			break;
+
+		case EMovementTypes::Other:
+			OtherMove(ValidTiles, Piece, Move);
+			break;
+		}
+	}
+
+	for (AGridTile* Tile : ValidTiles)
+	{
+		Tile->ShowValidMove(true);
+	}
 }

@@ -36,6 +36,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FVector CurrentCoordinate{0,0,0};
+
+
+public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int MovesMade{ 0 };
 	UPROPERTY(BlueprintReadOnly)
@@ -51,4 +54,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void Move(const AGridTile* TargetTile, const float& TileSize);
+
+	FVector GetCurrentCoordinate() const { return CurrentCoordinate; };
+	FPieceSetupProperties GetSetupProperties() const { return SetupProperties; };
 };
