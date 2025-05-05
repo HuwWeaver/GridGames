@@ -29,8 +29,8 @@ void AGridGamePawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AGridGameGameMode* GameMode = Cast<AGridGameGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
-	GameMode->PieceMoved.AddDynamic(this, &AGridGamePawn::Deselect);
+	GameMode = Cast<AGridGameGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	GameMode->PieceMoved.AddDynamic(this, &AGridGamePawn::OnPieceMoved);
 }
 
 // Called every frame
@@ -45,7 +45,8 @@ void AGridGamePawn::NotifyControllerChanged()
 	Super::NotifyControllerChanged();
 
 	// Add Input Mapping Context
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	PlayerController = Cast<APlayerController>(Controller);
+	if (PlayerController)
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
@@ -63,34 +64,62 @@ void AGridGamePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		// Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AGridGamePawn::Move);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AGridGamePawn::MoveInput);
 
 		// Selection
-		EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Triggered, this, &AGridGamePawn::Select);
+		EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Triggered, this, &AGridGamePawn::SelectInput);
 
 		// Deselection
-		EnhancedInputComponent->BindAction(DeselectAction, ETriggerEvent::Triggered, this, &AGridGamePawn::Deselect);
+		EnhancedInputComponent->BindAction(DeselectAction, ETriggerEvent::Triggered, this, &AGridGamePawn::DeselectInput);
 	}
 
 }
 
-void AGridGamePawn::Move(const FInputActionValue& Value)
+void AGridGamePawn::MoveInput(const FInputActionValue& Value)
 {
 }
 
-void AGridGamePawn::Select()
+void AGridGamePawn::SelectInput()
 {
-	if (bGamePieceSelected)
-	{
-		//Find Tile
-	}
-	else
-	{
-		//Find Game Piece
-	}
+	UE_LOG(LogTemp, Display, TEXT("Selecting..."));
+	
+	FHitResult HitResult;
+
+    if (bGamePieceSelected)
+    {
+        // Find Tile
+        if (PlayerController->GetHitResultUnderCursor(ECC_GameTraceChannel2, false, HitResult))
+        {
+			AGridTile* HitTile = Cast<AGridTile>(HitResult.GetActor());
+			if (HitTile)
+			{
+				GameMode->TryMovePiece(SelectedPiece, HitTile);
+			}
+        }
+    }
+    else
+    {
+        if (PlayerController->GetHitResultUnderCursor(ECC_GameTraceChannel1, false, HitResult))
+        {
+            SelectedPiece = Cast<AGamePiece>(HitResult.GetActor());
+            if (SelectedPiece)
+            {
+                bGamePieceSelected = true;
+                GameMode->PieceSelected(SelectedPiece);
+            }
+        }
+    }
 }
 
-void AGridGamePawn::Deselect()
+void AGridGamePawn::DeselectInput()
+{
+	bGamePieceSelected = false;
+	SelectedPiece = nullptr;
+	GameMode->PieceDeselected();
+	UE_LOG(LogTemp, Display, TEXT("Game Piece Deslected"));
+}
+
+void AGridGamePawn::OnPieceMoved()
 {
 	bGamePieceSelected = false;
 	SelectedPiece = nullptr;

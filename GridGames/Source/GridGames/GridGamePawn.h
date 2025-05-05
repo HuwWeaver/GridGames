@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GamePiece.h"
+#include "GridTile.h"
+#include "GridGameGameMode.h"
 #include "GameFramework/Pawn.h"
 #include "GridGamePawn.generated.h"
 
@@ -13,6 +15,7 @@ class UInputComponent;
 class UInputAction;
 class UInputMappingContext;
 struct FInputActionValue;
+
 
 UCLASS()
 class GRIDGAMES_API AGridGamePawn : public APawn
@@ -41,10 +44,11 @@ public:
 	// Sets default values for this pawn's properties
 	AGridGamePawn();
 
-	void Move(const FInputActionValue& Value);
-	void Select();
+	void MoveInput(const FInputActionValue& Value);
+	void SelectInput();
+	void DeselectInput();
 	UFUNCTION()
-	void Deselect();
+	void OnPieceMoved();
 
 protected:
 	// Called when the game starts or when spawned
@@ -54,6 +58,10 @@ protected:
 	bool bGamePieceSelected{ false };
 	UPROPERTY(BlueprintReadWrite)
 	AGamePiece* SelectedPiece{ nullptr };
+
+private:
+	APlayerController* PlayerController{ nullptr };
+	AGridGameGameMode* GameMode{ nullptr };
 
 public:	
 	// Called every frame

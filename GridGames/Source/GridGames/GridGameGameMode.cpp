@@ -189,16 +189,11 @@ void AGridGameGameMode::TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile)
 		Piece->Move(TargetTile, TileSize);
 		PieceMoved.Broadcast();
 
-		for (AGridTile* Tile : ValidTiles)
-		{
-			Tile->ShowValidMove(false);
-		}
-
-		ValidTiles.Empty();
+		PieceDeselected();
 	}
 }
 
-void AGridGameGameMode::OnPieceSelected(AGamePiece* Piece)
+void AGridGameGameMode::PieceSelected(AGamePiece* Piece)
 {
 	FPieceMovementData& MovementData = Piece->MovementData;
 	ValidTiles.Empty();
@@ -232,4 +227,14 @@ void AGridGameGameMode::OnPieceSelected(AGamePiece* Piece)
 	{
 		Tile->ShowValidMove(true);
 	}
+}
+
+void AGridGameGameMode::PieceDeselected()
+{
+	for (AGridTile* Tile : ValidTiles)
+	{
+		Tile->ShowValidMove(false);
+	}
+
+	ValidTiles.Empty();
 }

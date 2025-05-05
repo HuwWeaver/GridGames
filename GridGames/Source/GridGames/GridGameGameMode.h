@@ -53,12 +53,12 @@ private:
 	virtual void OtherMove(const AGamePiece* Piece, const FPieceMovementProperties& Move);
 
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile);
 
-	UFUNCTION(BlueprintCallable)
-	void OnPieceSelected(AGamePiece* Piece);
+	void PieceSelected(AGamePiece* Piece);
+	void PieceDeselected();
 
-	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	UPROPERTY()
 	FPieceMoved PieceMoved;
 };
