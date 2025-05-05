@@ -16,6 +16,7 @@ void AGridGameGameMode::BeginPlay()
 
 void AGridGameGameMode::CreateGrid()
 {
+	//TODO: Remove LogTemp log, implement more robust method
 	UE_LOG(LogTemp, Display, TEXT("Creating Grid..."));
 
 	for (size_t Column = 0; Column < GridColumns; Column++){
@@ -31,19 +32,24 @@ void AGridGameGameMode::CreateGrid()
 		}
 	}
 
+	//TODO: Remove LogTemp log, implement more robust method
 	UE_LOG(LogTemp, Display, TEXT("Grid Created!"));
 	PopulateBoard();
 }
 
 void AGridGameGameMode::PopulateBoard()
 {
+	//TODO: Remove LogTemp log, implement more robust method
 	UE_LOG(LogTemp, Display, TEXT("Populating Board..."));
 
-	TArray<FName> SetupDataRows = SetupData->GetRowNames();
+	//TODO: Remove LogTemp log, implement more robust method
+	if (!PiecesSetupData || !PiecesMovementData) UE_LOG(LogTemp, Fatal, TEXT("No Valid Setup or Movement Data"));
+
+	TArray<FName> SetupDataRows = PiecesSetupData->GetRowNames();
 
 	for (FName RowName : SetupDataRows)
 	{
-		FPieceSetupProperties* Row = SetupData->FindRow<FPieceSetupProperties>(RowName, "");
+		FPieceSetupProperties* Row = PiecesSetupData->FindRow<FPieceSetupProperties>(RowName, "");
 
 		//X and Y are swapped for first vector as grid X axis doesn't follow world X axis, but rather follows world Y (and vice versa).
 		FVector Location = FVector(Row->StartingCoordinates.Y * TileSize, Row->StartingCoordinates.X * TileSize, 0.0) + FVector(TileSize / 2, TileSize / 2, 100);
@@ -60,17 +66,21 @@ void AGridGameGameMode::PopulateBoard()
 		}
 
 		FText PieceName = FText::FromString(StringName);
-		FPieceMovementData* MoveData = PiecesData->FindRow<FPieceMovementData>(UKismetStringLibrary::Conv_StringToName(StringName), "");
+		FPieceMovementData* MoveData = PiecesMovementData->FindRow<FPieceMovementData>(UKismetStringLibrary::Conv_StringToName(StringName), "");
 
 		Piece->Init(PieceName, *Row, *MoveData);
 	}
 
+	//TODO: Remove LogTemp log, implement more robust method
 	UE_LOG(LogTemp, Display, TEXT("Board Populated!"));
 }
 
 void AGridGameGameMode::StepMove(const AGamePiece* Piece, const FPieceMovementProperties& Move)
 {
-	FVector TargetCoordinate = Piece->GetCurrentCoordinate() + Move.MovementVector;
+	FVector MovementVector = Move.MovementVector;
+	if (!Piece->GetSetupProperties().bWhite) MovementVector *= -1;
+
+	FVector TargetCoordinate = Piece->GetCurrentCoordinate() + MovementVector;
 
 	if (!GridMap.Contains(TargetCoordinate))
 	{
@@ -89,11 +99,12 @@ void AGridGameGameMode::StepMove(const AGamePiece* Piece, const FPieceMovementPr
 	AGamePiece* OccupyingPiece = TargetTile.GetOccupyingPiece();
 	if (OccupyingPiece == nullptr)
 	{
+		//TODO: Remove LogTemp log, implement more robust method
 		UE_LOG(LogTemp, Fatal, TEXT("OccupyingPiece is nullptr"));
 		return;
 	}
 
-	if (OccupyingPiece->SetupProperties.bWhite == Piece->SetupProperties.bWhite)
+	if (OccupyingPiece->GetSetupProperties().bWhite == Piece->GetSetupProperties().bWhite)
 	{
 		//Tile Occupied by Same Team = Invalid Move
 		return;
@@ -113,7 +124,10 @@ void AGridGameGameMode::StepMove(const AGamePiece* Piece, const FPieceMovementPr
 
 void AGridGameGameMode::RangeMove(const AGamePiece* Piece, const FPieceMovementProperties& Move, const int& RangeLimit)
 {
-	FVector TargetCoordinate = Piece->GetCurrentCoordinate() + Move.MovementVector;
+	FVector MovementVector = Move.MovementVector;
+	if (!Piece->GetSetupProperties().bWhite) MovementVector *= -1;
+
+	FVector TargetCoordinate = Piece->GetCurrentCoordinate() + MovementVector;
 	int RangeLeft = RangeLimit - 1;
 
 	while (GridMap.Contains(TargetCoordinate))
@@ -129,7 +143,7 @@ void AGridGameGameMode::RangeMove(const AGamePiece* Piece, const FPieceMovementP
 			{
 				//No Range Limit Specified - Boundless Range
 				//Move to Next Tile
-				TargetCoordinate = TargetCoordinate + Move.MovementVector;
+				TargetCoordinate = TargetCoordinate + MovementVector;
 				continue;
 			}
 
@@ -141,7 +155,7 @@ void AGridGameGameMode::RangeMove(const AGamePiece* Piece, const FPieceMovementP
 			else
 			{
 				//Range Remaining - Move to Next Tile
-				TargetCoordinate = TargetCoordinate + Move.MovementVector;
+				TargetCoordinate = TargetCoordinate + MovementVector;
 				RangeLeft--;
 				continue;
 			}
@@ -150,11 +164,12 @@ void AGridGameGameMode::RangeMove(const AGamePiece* Piece, const FPieceMovementP
 		AGamePiece* OccupyingPiece = TargetTile.GetOccupyingPiece();
 		if (OccupyingPiece == nullptr)
 		{
+			//TODO: Remove LogTemp log, implement more robust method
 			UE_LOG(LogTemp, Fatal, TEXT("OccupyingPiece is nullptr"));
 			return;
 		}
 
-		if (OccupyingPiece->GetSetupProperties().bWhite == Piece->SetupProperties.bWhite)
+		if (OccupyingPiece->GetSetupProperties().bWhite == Piece->GetSetupProperties().bWhite)
 		{
 			//Tile Occupied by Same Team = Invalid Move
 			return;
@@ -195,7 +210,7 @@ void AGridGameGameMode::TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile)
 
 void AGridGameGameMode::PieceSelected(AGamePiece* Piece)
 {
-	FPieceMovementData& MovementData = Piece->MovementData;
+	FPieceMovementData MovementData = Piece->GetMovementData();
 	ValidTiles.Empty();
 
 	for (FPieceMovementProperties& Move : MovementData.FullMoveList)

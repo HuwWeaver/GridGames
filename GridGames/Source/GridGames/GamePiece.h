@@ -21,39 +21,31 @@ public:
 	// Sets default values for this actor's properties
 	AGamePiece();
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* PieceMesh;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(EditAnywhere)
 	UTextRenderComponent* NameDisplay;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FVector CurrentCoordinate{0,0,0};
-
-
-public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int MovesMade{ 0 };
-	UPROPERTY(BlueprintReadOnly)
 	FPieceSetupProperties SetupProperties;
-	UPROPERTY(BlueprintReadOnly)
 	FPieceMovementData MovementData;
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	void Init(const FText& Name, const FPieceSetupProperties& SetupData, const FPieceMovementData& MoveData);
-
-	UFUNCTION(BlueprintCallable)
-	void Move(const AGridTile* TargetTile, const float& TileSize);
-
+	
+	//TODO: Send via Pointer / Refernce instead?
 	FVector GetCurrentCoordinate() const { return CurrentCoordinate; };
 	FPieceSetupProperties GetSetupProperties() const { return SetupProperties; };
+	FPieceMovementData GetMovementData() const { return MovementData; };
 
+	void Init(const FText& Name, const FPieceSetupProperties& SetupData, const FPieceMovementData& MoveData);
+	void Move(const AGridTile* TargetTile, const float& TileSize);
 	void PieceCaptured();
 };

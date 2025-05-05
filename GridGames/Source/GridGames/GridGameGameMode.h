@@ -18,14 +18,14 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly)
 	int GridRows{ 8 };
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly)
 	int GridColumns{ 8 };
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly)
 	int GridLayers{ 1 };
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly)
 	float TileSize{ 200.0f };
 
 	UPROPERTY(EditDefaultsOnly)
@@ -37,10 +37,10 @@ protected:
 	TSubclassOf<AGamePiece> GamePieceClass;
 
 	UPROPERTY(EditDefaultsOnly)
-	UDataTable* SetupData;
+	UDataTable* PiecesSetupData;
 
 	UPROPERTY(EditDefaultsOnly)
-	UDataTable* PiecesData;
+	UDataTable* PiecesMovementData;
 
 private:
 	TArray<AGridTile*> ValidTiles;
@@ -53,9 +53,7 @@ private:
 	virtual void OtherMove(const AGamePiece* Piece, const FPieceMovementProperties& Move);
 
 public:
-	UFUNCTION()
 	void TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile);
-
 	void PieceSelected(AGamePiece* Piece);
 	void PieceDeselected();
 

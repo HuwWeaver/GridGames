@@ -44,19 +44,16 @@ public:
 	// Sets default values for this pawn's properties
 	AGridGamePawn();
 
-	void MoveInput(const FInputActionValue& Value);
-	void SelectInput();
-	void DeselectInput();
-	UFUNCTION()
-	void OnPieceMoved();
+	// APawn interface
+	virtual void NotifyControllerChanged() override;
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	// End of APawn interface
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(BlueprintReadWrite)
 	bool bGamePieceSelected{ false };
-	UPROPERTY(BlueprintReadWrite)
 	AGamePiece* SelectedPiece{ nullptr };
 
 private:
@@ -67,8 +64,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// APawn interface
-	virtual void NotifyControllerChanged() override;
-	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-	// End of APawn interface
+	void MoveInput(const FInputActionValue& Value);
+	void SelectInput();
+	void DeselectInput();
+
+	UFUNCTION()
+	void OnPieceMoved();
 };

@@ -17,21 +17,21 @@ class GRIDGAMES_API AGridTile : public AActor
 {
 	GENERATED_BODY()
 	
+	UPROPERTY()
+	USceneComponent* Root;
+
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* TileMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UTextRenderComponent* CoordinateDisplay;
+
+	UPROPERTY(EditAnywhere)
+	UBoxComponent* CollisionBox;
+
 public:	
 	// Sets default values for this actor's properties
 	AGridTile();
-
-	UPROPERTY(BlueprintReadOnly)
-	USceneComponent* Root;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	UStaticMeshComponent* TileMesh;
-
-	UPROPERTY(BlueprintReadOnly)
-	UTextRenderComponent* CoordinateDisplay;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	UBoxComponent* CollisionBox;
 
 protected:
 	// Called when the game starts or when spawned
@@ -47,19 +47,21 @@ private:
 protected:
 	UPROPERTY(BlueprintReadWrite)
 	bool bOccupied{ false };
-
-public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	FVector Coordinates;
 	UPROPERTY(BlueprintReadWrite)
 	AGamePiece* OccupyingPiece{ nullptr };
 
-public:	
+	FVector Coordinates;
+
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void Init(const FVector& InCoordinates);
+	//TODO: Send via Pointer / Refernce instead?
 	bool GetOccupied() const { return bOccupied; }
+	FVector GetCoordinates() const { return Coordinates; };
+	
 	AGamePiece* GetOccupyingPiece() const { return OccupyingPiece; }
+
+	void Init(const FVector& InCoordinates);
 	void ShowValidMove(bool bShow);
 };

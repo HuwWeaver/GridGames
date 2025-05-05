@@ -69,7 +69,7 @@ void AGamePiece::Move(const AGridTile* TargetTile, const float& TileSize)
 	FVector TargetLocation = TargetTile->GetActorLocation() + FVector(TileSize / 2, TileSize / 2, 100);
 	SetActorLocation(TargetLocation, false, 0, ETeleportType::ResetPhysics);
 
-	CurrentCoordinate = TargetTile->Coordinates;
+	CurrentCoordinate = TargetTile->GetCoordinates();
 
 	MovesMade++;
 }
