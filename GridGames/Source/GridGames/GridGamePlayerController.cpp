@@ -3,3 +3,9 @@
 
 #include "GridGamePlayerController.h"
 
+void AGridGamePlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	bShowMouseCursor = true;
+}
