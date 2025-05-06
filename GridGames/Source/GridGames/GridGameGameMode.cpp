@@ -130,7 +130,7 @@ void AGridGameGameMode::RangeMove(const AGamePiece* Piece, const FPieceMovementP
 	if (!Piece->GetSetupProperties().bWhite) MovementVector *= -1;
 
 	FVector TargetCoordinate = Piece->GetCurrentCoordinate() + MovementVector;
-	int RangeLeft = RangeLimit - 1;
+	int RemainingRange = RangeLimit - 1;
 
 	while (GridMap.Contains(TargetCoordinate))
 	{
@@ -149,7 +149,7 @@ void AGridGameGameMode::RangeMove(const AGamePiece* Piece, const FPieceMovementP
 				continue;
 			}
 
-			if (RangeLeft <= 0)
+			if (RemainingRange <= 0)
 			{
 				//Range Limit Reached
 				return;
@@ -158,7 +158,7 @@ void AGridGameGameMode::RangeMove(const AGamePiece* Piece, const FPieceMovementP
 			{
 				//Range Remaining - Move to Next Tile
 				TargetCoordinate = TargetCoordinate + MovementVector;
-				RangeLeft--;
+				RemainingRange--;
 				continue;
 			}
 		}
