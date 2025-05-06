@@ -21,14 +21,16 @@ void AGridGameGameMode::CreateGrid()
 
 	for (size_t Column = 0; Column < GridColumns; Column++){
 		for (size_t Row = 0; Row < GridRows; Row++) {
+			for (size_t Layer = 0; Layer < GridLayers; Layer++) {
 
-			FVector Location = FVector(Row * TileSize, Column * TileSize, 0.0f);
-			FRotator Rotation(0,0,0);
-			FActorSpawnParameters SpawnInfo;
+				FVector Location = FVector(Row * TileSize, Column * TileSize, Layer * 500.0f);
+				FRotator Rotation(0, 0, 0);
+				FActorSpawnParameters SpawnInfo;
 
-			AGridTile* Tile = GetWorld()->SpawnActor<AGridTile>(GridTileClass, Location, Rotation, SpawnInfo);
-			Tile->Init(FVector(Column, Row, 0));
-			GridMap.Add(FVector(Column, Row, 0), Tile);
+				AGridTile* Tile = GetWorld()->SpawnActor<AGridTile>(GridTileClass, Location, Rotation, SpawnInfo);
+				Tile->Init(FVector(Column, Row, Layer));
+				GridMap.Add(FVector(Column, Row, Layer), Tile);
+			}
 		}
 	}
 
