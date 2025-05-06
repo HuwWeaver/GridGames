@@ -67,8 +67,8 @@ void AGridGameGameMode::PopulateBoard()
 			StringName = StringName.LeftChop(1);
 		}
 
-		FText PieceName = FText::FromString(StringName);
-		FPieceMovementData* MoveData = PiecesMovementData->FindRow<FPieceMovementData>(UKismetStringLibrary::Conv_StringToName(StringName), "");
+		FName PieceName = UKismetStringLibrary::Conv_StringToName(StringName);
+		FPieceMovementData* MoveData = PiecesMovementData->FindRow<FPieceMovementData>(PieceName, "");
 
 		Piece->Init(PieceName, *Row, *MoveData);
 	}

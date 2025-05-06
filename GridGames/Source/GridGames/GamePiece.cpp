@@ -41,9 +41,10 @@ void AGamePiece::Tick(float DeltaTime)
 
 }
 
-void AGamePiece::Init(const FText& Name, const FPieceSetupProperties& SetupData, const FPieceMovementData& MoveData)
+void AGamePiece::Init(const FName& Name, const FPieceSetupProperties& SetupData, const FPieceMovementData& MoveData)
 {
-	NameDisplay->SetText(Name);
+	PieceName = Name;
+	NameDisplay->SetText(FText::FromName(Name));
 	SetupProperties = SetupData;
 	CurrentCoordinate = SetupProperties.StartingCoordinates;
 	MovementData = MoveData;
@@ -71,7 +72,7 @@ void AGamePiece::Move(const AGridTile* TargetTile, const float& TileSize)
 
 	CurrentCoordinate = TargetTile->GetCoordinates();
 
-	MovesMade++;
+	NumMovesMade++;
 }
 
 void AGamePiece::PieceCaptured()

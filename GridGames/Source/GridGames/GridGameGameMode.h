@@ -43,10 +43,11 @@ protected:
 	UDataTable* PiecesMovementData;
 
 private:
-	TArray<AGridTile*> ValidTiles;
-
 	void CreateGrid();
 	void PopulateBoard();
+
+protected:
+	TArray<AGridTile*> ValidTiles;
 
 	void StepMove(const AGamePiece* Piece, const FPieceMovementProperties& Move);
 	void RangeMove(const AGamePiece* Piece, const FPieceMovementProperties& Move, const int& RangeLimit = -99);

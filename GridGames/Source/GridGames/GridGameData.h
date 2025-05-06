@@ -46,6 +46,8 @@ struct GRIDGAMES_API FPieceMovementProperties
 	bool bCanCapture{ true };
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int RangeLimit{ 0 };
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FName MoveName{ "" };
 };
 
 USTRUCT(BlueprintType)
