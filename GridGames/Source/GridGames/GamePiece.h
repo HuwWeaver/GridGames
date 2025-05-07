@@ -32,6 +32,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	FVector CurrentCoordinate{0,0,0};
+	TArray<FVector> PastCoordinates;
 	int NumMovesMade{ 0 };
 	FPieceSetupProperties SetupProperties;
 	FPieceMovementData MovementData;
@@ -43,6 +44,7 @@ public:
 	
 	//TODO: Send via Pointer / Refernce instead?
 	FVector GetCurrentCoordinate() const { return CurrentCoordinate; };
+	TArray<FVector> GetPastCoordinates() const { return PastCoordinates; };
 	FPieceSetupProperties GetSetupProperties() const { return SetupProperties; };
 	FPieceMovementData GetMovementData() const { return MovementData; };
 	FName GetPieceName() const { return PieceName; };

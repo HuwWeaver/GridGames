@@ -2,6 +2,7 @@
 
 
 #include "ChessGameMode.h"
+#include "Kismet/KismetMathLibrary.h"
 
 void AChessGameMode::OtherMove(const AGamePiece* Piece, const FPieceMovementProperties& Move)
 {
@@ -54,15 +55,69 @@ void AChessGameMode::OtherMove(const AGamePiece* Piece, const FPieceMovementProp
 				if (OccupyingPiece->GetSetupProperties().bWhite != Piece->GetSetupProperties().bWhite)
 				{
 					//Tile Occupied by Opposing Team = Standard Capture, Valid Move
-					ValidTiles.Add(&TargetTile);
+					ValidMoveDestinations.Add(TargetCoordinate);
 					return;
 				}			
 			}
 			else
 			{
-				//Target Tile is empty -> En Passant possible?				
-			}
+				//Target Tile is empty -> En Passant possible?
+				//Get Adjacent Coordinate
+				FVector AdjacentCoordinate = Piece->GetCurrentCoordinate() + FVector(MovementVector.X, 0, 0);
+				if (!GridMap.Contains(AdjacentCoordinate))
+				{
+					//Adjacent Tile is out of bounds = Invalid Move
+					return;
+				}
 
+				AGridTile& AdjacentTile = *GridMap.FindRef(AdjacentCoordinate);
+				if (!AdjacentTile.GetOccupied())
+				{
+					//Adjacent Tile is empty -> Invalid Move
+					return;
+				}
+
+				AGamePiece* OccupyingPiece = AdjacentTile.GetOccupyingPiece();
+				if (OccupyingPiece == nullptr)
+				{
+					//TODO: Remove LogTemp log, implement more robust method
+					UE_LOG(LogTemp, Fatal, TEXT("OccupyingPiece is nullptr"));
+					return;
+				}
+
+				if (OccupyingPiece->GetSetupProperties().bWhite == Piece->GetSetupProperties().bWhite)
+				{
+					//Tile Occupied by Same Team - Invalid Move
+					return;
+				}
+
+				if (OccupyingPiece->GetPieceName() != "Pawn")
+				{
+					//OccupyingPiece not a Pawn - Invalid Move
+					return;
+				}
+
+				if (OccupyingPiece != LastMovedPiece)
+				{
+					//OccupyingPiece not last moved piece - Invalid Move
+					return;
+				}
+
+				//Check if Opposing Pawn moved two spaces
+				float VectorLength = OccupyingPiece->GetCurrentCoordinate().Y - OccupyingPiece->GetPastCoordinates().Last().Y;
+				VectorLength = UKismetMathLibrary::Abs(VectorLength);
+				if (VectorLength >= 2)
+				{
+					//En Passant possible
+					ValidMoveDestinations.Add(TargetCoordinate);
+					return;
+				}
+				else
+				{
+					//En Passant not possible
+					return;
+				}			
+			}
 		}
 	}
 	else if (Piece->GetPieceName() == "King")

@@ -94,7 +94,7 @@ void AGridGameGameMode::StepMove(const AGamePiece* Piece, const FPieceMovementPr
 	if (!TargetTile.GetOccupied())
 	{
 		//Empty Tile = Valid Move
-		ValidTiles.Add(&TargetTile);
+		ValidMoveDestinations.Add(TargetCoordinate);
 		return;
 	}
 
@@ -116,7 +116,7 @@ void AGridGameGameMode::StepMove(const AGamePiece* Piece, const FPieceMovementPr
 	{
 		//Tile occupied by opposing team &&
 		//Move can capture = Valid Move
-		ValidTiles.Add(&TargetTile);
+		ValidMoveDestinations.Add(TargetCoordinate);
 		return;
 	}
 
@@ -139,7 +139,7 @@ void AGridGameGameMode::RangeMove(const AGamePiece* Piece, const FPieceMovementP
 		if (!TargetTile.GetOccupied())
 		{
 			//Empty Tile = Valid Move
-			ValidTiles.Add(&TargetTile);
+			ValidMoveDestinations.Add(TargetCoordinate);
 
 			if (RangeLimit == -99)
 			{
@@ -181,7 +181,7 @@ void AGridGameGameMode::RangeMove(const AGamePiece* Piece, const FPieceMovementP
 		{
 			//Tile occupied by opposing team &&
 			//Move can capture = Valid Move
-			ValidTiles.Add(&TargetTile);
+			ValidMoveDestinations.Add(TargetCoordinate);
 			return;
 		}
 
@@ -196,7 +196,7 @@ void AGridGameGameMode::OtherMove(const AGamePiece* Piece, const FPieceMovementP
 
 void AGridGameGameMode::TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile)
 {
-	if (ValidTiles.Contains(TargetTile))
+	if (ValidMoveDestinations.Contains(TargetTile->GetCoordinates()))
 	{
 		if (TargetTile->GetOccupied())
 		{
@@ -204,16 +204,21 @@ void AGridGameGameMode::TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile)
 		}
 
 		Piece->Move(TargetTile, TileSize);
+		LastMovedPiece = Piece;
 		PieceMoved.Broadcast();
 
 		PieceDeselected();
+	}
+	else
+	{
+		//TODO: Invalid Tile Selected, tell player
 	}
 }
 
 void AGridGameGameMode::PieceSelected(AGamePiece* Piece)
 {
 	FPieceMovementData MovementData = Piece->GetMovementData();
-	ValidTiles.Empty();
+	ValidMoveDestinations.Empty();
 
 	for (FPieceMovementProperties& Move : MovementData.FullMoveList)
 	{
@@ -240,18 +245,24 @@ void AGridGameGameMode::PieceSelected(AGamePiece* Piece)
 		}
 	}
 
-	for (AGridTile* Tile : ValidTiles)
+	for (FVector TileCoordinate : ValidMoveDestinations)
 	{
-		Tile->ShowValidMove(true);
+		if (GridMap.Contains(TileCoordinate))
+		{
+			GridMap.FindRef(TileCoordinate)->ShowValidMove(true);
+		}
 	}
 }
 
 void AGridGameGameMode::PieceDeselected()
 {
-	for (AGridTile* Tile : ValidTiles)
+	for (FVector TileCoordinate : ValidMoveDestinations)
 	{
-		Tile->ShowValidMove(false);
+		if (GridMap.Contains(TileCoordinate))
+		{
+			GridMap.FindRef(TileCoordinate)->ShowValidMove(false);
+		}
 	}
 
-	ValidTiles.Empty();
+	ValidMoveDestinations.Empty();
 }

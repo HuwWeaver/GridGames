@@ -30,8 +30,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AGridTile> GridTileClass;
-	UPROPERTY(BlueprintReadOnly)
-	TMap<FVector, AGridTile*> GridMap;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AGamePiece> GamePieceClass;
@@ -47,7 +45,9 @@ private:
 	void PopulateBoard();
 
 protected:
-	TArray<AGridTile*> ValidTiles;
+	TMap<FVector, AGridTile*> GridMap;
+	TArray<FVector> ValidMoveDestinations;
+	AGamePiece* LastMovedPiece{ nullptr };
 
 	void StepMove(const AGamePiece* Piece, const FPieceMovementProperties& Move);
 	void RangeMove(const AGamePiece* Piece, const FPieceMovementProperties& Move, const int& RangeLimit = -99);
@@ -57,6 +57,8 @@ public:
 	void TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile);
 	void PieceSelected(AGamePiece* Piece);
 	void PieceDeselected();
+
+	AGamePiece* GetLastMovedPiece() const { return LastMovedPiece; }
 
 	UPROPERTY()
 	FPieceMoved PieceMoved;
