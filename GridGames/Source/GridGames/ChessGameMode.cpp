@@ -35,13 +35,15 @@ void AChessGameMode::OtherMove(AGamePiece* Piece, const FPieceMovementProperties
 			if (!Piece->GetSetupProperties().bWhite) MovementVector *= -1;
 
 			FVector TargetCoordinate = Piece->GetCurrentCoordinate() + MovementVector;
+			//Target Tile is out of bounds = Invalid Move
 			if (!GridMap.Contains(TargetCoordinate))
 			{
-				//Target Tile is out of bounds = Invalid Move
+
 				return;
 			}
 
 			AGridTile& TargetTile = *GridMap.FindRef(TargetCoordinate);
+			//Target Tile Occupied -> Standard Capture possible?
 			if (TargetTile.GetOccupied())
 			{
 				AGamePiece* OccupyingPiece = TargetTile.GetOccupyingPiece();
@@ -52,9 +54,9 @@ void AChessGameMode::OtherMove(AGamePiece* Piece, const FPieceMovementProperties
 					return;
 				}
 
+				//Tile Occupied by Opposing Team = Standard Capture, Valid Move
 				if (OccupyingPiece->GetSetupProperties().bWhite != Piece->GetSetupProperties().bWhite)
-				{
-					//Tile Occupied by Opposing Team = Standard Capture, Valid Move
+				{					
 					TArray<AGamePiece*> MovedPieces;
 					MovedPieces.Add(Piece);
 					TArray<FVector> TargetCoordinates;
@@ -67,21 +69,22 @@ void AChessGameMode::OtherMove(AGamePiece* Piece, const FPieceMovementProperties
 					return;
 				}			
 			}
+			//Target Tile is empty -> En Passant possible?
 			else
 			{
-				//Target Tile is empty -> En Passant possible?
-				//Get Adjacent Coordinate
 				FVector AdjacentCoordinate = Piece->GetCurrentCoordinate() + FVector(MovementVector.X, 0, 0);
+				//Adjacent Tile is out of bounds = Invalid Move
 				if (!GridMap.Contains(AdjacentCoordinate))
 				{
-					//Adjacent Tile is out of bounds = Invalid Move
+					
 					return;
 				}
 
 				AGridTile& AdjacentTile = *GridMap.FindRef(AdjacentCoordinate);
+				//Adjacent Tile is empty -> Invalid Move
 				if (!AdjacentTile.GetOccupied())
 				{
-					//Adjacent Tile is empty -> Invalid Move
+					
 					return;
 				}
 
@@ -93,30 +96,35 @@ void AChessGameMode::OtherMove(AGamePiece* Piece, const FPieceMovementProperties
 					return;
 				}
 
+				//Tile Occupied by Same Team - Invalid Move
 				if (OccupyingPiece->GetSetupProperties().bWhite == Piece->GetSetupProperties().bWhite)
 				{
-					//Tile Occupied by Same Team - Invalid Move
+					
 					return;
 				}
 
+				//OccupyingPiece not a Pawn - Invalid Move
 				if (OccupyingPiece->GetPieceName() != "Pawn")
 				{
-					//OccupyingPiece not a Pawn - Invalid Move
+					
 					return;
 				}
 
+				//OccupyingPiece not last moved piece - Invalid Move
 				if (OccupyingPiece != LastMovedPiece)
 				{
-					//OccupyingPiece not last moved piece - Invalid Move
+					
 					return;
 				}
 
 				//Check if Opposing Pawn moved two spaces
 				float VectorLength = OccupyingPiece->GetCurrentCoordinate().Y - OccupyingPiece->GetPastCoordinates().Last().Y;
 				VectorLength = UKismetMathLibrary::Abs(VectorLength);
+
+				//En Passant possible
 				if (VectorLength >= 2)
 				{
-					//En Passant possible
+					
 					TArray<AGamePiece*> MovedPieces;
 					MovedPieces.Add(Piece);
 					TArray<FVector> TargetCoordinates;
@@ -128,9 +136,10 @@ void AChessGameMode::OtherMove(AGamePiece* Piece, const FPieceMovementProperties
 					ValidMoveOutcomes.Add(TargetCoordinate, FMoveOutcome(MovedPieces, TargetCoordinates, CapturedPieces));
 					return;
 				}
-				else
+				//En Passant not possible
+				else 
 				{
-					//En Passant not possible
+					
 					return;
 				}			
 			}
@@ -138,6 +147,67 @@ void AChessGameMode::OtherMove(AGamePiece* Piece, const FPieceMovementProperties
 	}
 	else if (Piece->GetPieceName() == "King")
 	{
+		if (Move.MoveName == "Castle")
+		{
+			if (Piece->GetNumMovesMade() < 1)
+			{
+				FVector NormalizedMovementVector = Move.MovementVector;
+				NormalizedMovementVector.Normalize();
+				if (!Piece->GetSetupProperties().bWhite) NormalizedMovementVector *= -1;
 
+				for (int i = 1; i <= GridColumns; i++)
+				{
+					FVector TileCoordinate = Piece->GetCurrentCoordinate() + (NormalizedMovementVector * i);
+					//Target Tile is out of bounds = Invalid Move
+					if (!GridMap.Contains(TileCoordinate))
+					{
+						return;
+					}
+
+					AGridTile& TargetTile = *GridMap.FindRef(TileCoordinate);
+
+					//Tile not occupied, Castling still possible -> continue to next tile
+					if (!TargetTile.GetOccupied())
+					{
+						continue;
+					}
+
+					AGamePiece* OccupyingPiece = TargetTile.GetOccupyingPiece();
+
+					//Tile Occupied by Opposing Team = Invalid Move
+					if (OccupyingPiece->GetSetupProperties().bWhite != Piece->GetSetupProperties().bWhite)
+					{
+
+						return;
+					}
+
+					//OccupyingPiece not a Rook = Invalid Move
+					if (OccupyingPiece->GetPieceName() != "Rook")
+					{
+						return;
+					}
+
+					//Rook not moved either, Castling possible
+					if (OccupyingPiece->GetNumMovesMade() < 1)
+					{
+						TArray<AGamePiece*> MovedPieces;
+						TArray<FVector> TargetCoordinates;
+
+						FVector KingMovementVector = Move.MovementVector;
+						if (!Piece->GetSetupProperties().bWhite) KingMovementVector *= -1;
+						FVector KingTargetCoordinate = Piece->GetCurrentCoordinate() + KingMovementVector;
+						MovedPieces.Add(Piece);
+						TargetCoordinates.Add(KingTargetCoordinate);
+
+						FVector RookTargetCoordinate = Piece->GetCurrentCoordinate() + NormalizedMovementVector;
+						MovedPieces.Add(OccupyingPiece);
+						TargetCoordinates.Add(RookTargetCoordinate);
+
+						ValidMoveDestinations.Add(KingTargetCoordinate);
+						ValidMoveOutcomes.Add(KingTargetCoordinate, FMoveOutcome(MovedPieces, TargetCoordinates));
+					}
+				}
+			}
+		}
 	}
 }
