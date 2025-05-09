@@ -47,11 +47,12 @@ private:
 protected:
 	TMap<FVector, AGridTile*> GridMap;
 	TArray<FVector> ValidMoveDestinations;
+	TMap<FVector, FMoveOutcome> ValidMoveOutcomes;
 	AGamePiece* LastMovedPiece{ nullptr };
 
-	void StepMove(const AGamePiece* Piece, const FPieceMovementProperties& Move);
-	void RangeMove(const AGamePiece* Piece, const FPieceMovementProperties& Move, const int& RangeLimit = -99);
-	virtual void OtherMove(const AGamePiece* Piece, const FPieceMovementProperties& Move);
+	void StepMove(AGamePiece* Piece, const FPieceMovementProperties& Move);
+	void RangeMove(AGamePiece* Piece, const FPieceMovementProperties& Move, const int& RangeLimit = -99);
+	virtual void OtherMove(AGamePiece* Piece, const FPieceMovementProperties& Move);
 
 public:
 	void TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile);

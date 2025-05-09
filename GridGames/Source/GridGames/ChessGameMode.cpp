@@ -4,7 +4,7 @@
 #include "ChessGameMode.h"
 #include "Kismet/KismetMathLibrary.h"
 
-void AChessGameMode::OtherMove(const AGamePiece* Piece, const FPieceMovementProperties& Move)
+void AChessGameMode::OtherMove(AGamePiece* Piece, const FPieceMovementProperties& Move)
 {
 	if (Piece->GetPieceName() == "Pawn")
 	{
@@ -55,7 +55,15 @@ void AChessGameMode::OtherMove(const AGamePiece* Piece, const FPieceMovementProp
 				if (OccupyingPiece->GetSetupProperties().bWhite != Piece->GetSetupProperties().bWhite)
 				{
 					//Tile Occupied by Opposing Team = Standard Capture, Valid Move
+					TArray<AGamePiece*> MovedPieces;
+					MovedPieces.Add(Piece);
+					TArray<FVector> TargetCoordinates;
+					TargetCoordinates.Add(TargetCoordinate);
+					TArray<AGamePiece*> CapturedPieces;
+					CapturedPieces.Add(OccupyingPiece);
+
 					ValidMoveDestinations.Add(TargetCoordinate);
+					ValidMoveOutcomes.Add(TargetCoordinate, FMoveOutcome(MovedPieces, TargetCoordinates, CapturedPieces));
 					return;
 				}			
 			}
@@ -109,7 +117,15 @@ void AChessGameMode::OtherMove(const AGamePiece* Piece, const FPieceMovementProp
 				if (VectorLength >= 2)
 				{
 					//En Passant possible
+					TArray<AGamePiece*> MovedPieces;
+					MovedPieces.Add(Piece);
+					TArray<FVector> TargetCoordinates;
+					TargetCoordinates.Add(TargetCoordinate);
+					TArray<AGamePiece*> CapturedPieces;
+					CapturedPieces.Add(OccupyingPiece);
+
 					ValidMoveDestinations.Add(TargetCoordinate);
+					ValidMoveOutcomes.Add(TargetCoordinate, FMoveOutcome(MovedPieces, TargetCoordinates, CapturedPieces));
 					return;
 				}
 				else

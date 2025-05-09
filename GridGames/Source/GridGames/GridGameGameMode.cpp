@@ -77,8 +77,8 @@ void AGridGameGameMode::PopulateBoard()
 	UE_LOG(LogTemp, Display, TEXT("Board Populated!"));
 }
 
-void AGridGameGameMode::StepMove(const AGamePiece* Piece, const FPieceMovementProperties& Move)
-{
+void AGridGameGameMode::StepMove(AGamePiece* Piece, const FPieceMovementProperties& Move)
+{	
 	FVector MovementVector = Move.MovementVector;
 	if (!Piece->GetSetupProperties().bWhite) MovementVector *= -1;
 
@@ -94,7 +94,14 @@ void AGridGameGameMode::StepMove(const AGamePiece* Piece, const FPieceMovementPr
 	if (!TargetTile.GetOccupied())
 	{
 		//Empty Tile = Valid Move
+		TArray<AGamePiece*> MovedPieces;
+		MovedPieces.Add(Piece);
+		TArray<FVector> TargetCoordinates;
+		TargetCoordinates.Add(TargetCoordinate);
+		
 		ValidMoveDestinations.Add(TargetCoordinate);
+		ValidMoveOutcomes.Add(TargetCoordinate, FMoveOutcome(MovedPieces, TargetCoordinates));
+
 		return;
 	}
 
@@ -114,9 +121,16 @@ void AGridGameGameMode::StepMove(const AGamePiece* Piece, const FPieceMovementPr
 
 	if (Move.bCanCapture)
 	{
-		//Tile occupied by opposing team &&
-		//Move can capture = Valid Move
+		//Tile occupied by opposing team && Move can capture = Valid Move
+		TArray<AGamePiece*> MovedPieces;
+		MovedPieces.Add(Piece);
+		TArray<FVector> TargetCoordinates;
+		TargetCoordinates.Add(TargetCoordinate);
+		TArray<AGamePiece*> CapturedPieces;
+		CapturedPieces.Add(OccupyingPiece);
+
 		ValidMoveDestinations.Add(TargetCoordinate);
+		ValidMoveOutcomes.Add(TargetCoordinate, FMoveOutcome(MovedPieces, TargetCoordinates, CapturedPieces));
 		return;
 	}
 
@@ -124,7 +138,7 @@ void AGridGameGameMode::StepMove(const AGamePiece* Piece, const FPieceMovementPr
 	return;
 }
 
-void AGridGameGameMode::RangeMove(const AGamePiece* Piece, const FPieceMovementProperties& Move, const int& RangeLimit)
+void AGridGameGameMode::RangeMove(AGamePiece* Piece, const FPieceMovementProperties& Move, const int& RangeLimit)
 {
 	FVector MovementVector = Move.MovementVector;
 	if (!Piece->GetSetupProperties().bWhite) MovementVector *= -1;
@@ -139,7 +153,13 @@ void AGridGameGameMode::RangeMove(const AGamePiece* Piece, const FPieceMovementP
 		if (!TargetTile.GetOccupied())
 		{
 			//Empty Tile = Valid Move
+			TArray<AGamePiece*> MovedPieces;
+			MovedPieces.Add(Piece);
+			TArray<FVector> TargetCoordinates;
+			TargetCoordinates.Add(TargetCoordinate);
+
 			ValidMoveDestinations.Add(TargetCoordinate);
+			ValidMoveOutcomes.Add(TargetCoordinate, FMoveOutcome(MovedPieces, TargetCoordinates));
 
 			if (RangeLimit == -99)
 			{
@@ -179,9 +199,16 @@ void AGridGameGameMode::RangeMove(const AGamePiece* Piece, const FPieceMovementP
 
 		if (Move.bCanCapture)
 		{
-			//Tile occupied by opposing team &&
-			//Move can capture = Valid Move
+			//Tile occupied by opposing team && Move can capture = Valid Move
+			TArray<AGamePiece*> MovedPieces;
+			MovedPieces.Add(Piece);
+			TArray<FVector> TargetCoordinates;
+			TargetCoordinates.Add(TargetCoordinate);
+			TArray<AGamePiece*> CapturedPieces;
+			CapturedPieces.Add(OccupyingPiece);
+
 			ValidMoveDestinations.Add(TargetCoordinate);
+			ValidMoveOutcomes.Add(TargetCoordinate, FMoveOutcome(MovedPieces, TargetCoordinates, CapturedPieces));
 			return;
 		}
 
@@ -190,29 +217,44 @@ void AGridGameGameMode::RangeMove(const AGamePiece* Piece, const FPieceMovementP
 	}
 }
 
-void AGridGameGameMode::OtherMove(const AGamePiece* Piece, const FPieceMovementProperties& Move)
+void AGridGameGameMode::OtherMove(AGamePiece* Piece, const FPieceMovementProperties& Move)
 {
 }
 
 void AGridGameGameMode::TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile)
 {
-	if (ValidMoveDestinations.Contains(TargetTile->GetCoordinates()))
+	if (!ValidMoveDestinations.Contains(TargetTile->GetCoordinates()))
 	{
-		if (TargetTile->GetOccupied())
-		{
-			TargetTile->GetOccupyingPiece()->PieceCaptured();
-		}
-
-		Piece->Move(TargetTile, TileSize);
-		LastMovedPiece = Piece;
-		PieceMoved.Broadcast();
-
-		PieceDeselected();
+		//TODO: Remove LogTemp log, implement more robust method
+		UE_LOG(LogTemp, Error, TEXT("Target Coordinate not contained in Valid Move Destinations"));
+		return;
 	}
-	else
+	
+	if (!ValidMoveOutcomes.Contains(TargetTile->GetCoordinates()))
 	{
-		//TODO: Invalid Tile Selected, tell player
+		//TODO: Remove LogTemp log, implement more robust method
+		UE_LOG(LogTemp, Error, TEXT("Target Coordinate not contained in Valid Move Outcomes"));
+		return;
 	}
+
+	FMoveOutcome MoveOutcome = ValidMoveOutcomes.FindRef(TargetTile->GetCoordinates());
+
+	for (int i = 0; i < MoveOutcome.MovedPieces.Num(); i++)
+	{
+		AGamePiece* PieceToMove = MoveOutcome.MovedPieces[i];
+		FVector TargetCoordinate = MoveOutcome.TargetCoordinates[i];
+		PieceToMove->Move(GridMap.FindRef(TargetCoordinate), TileSize);
+	}
+
+	for (AGamePiece* PieceToCapture : MoveOutcome.CapturedPieces)
+	{
+		PieceToCapture->PieceCaptured();
+	}
+
+	LastMovedPiece = Piece;
+	PieceMoved.Broadcast();
+
+	PieceDeselected();
 }
 
 void AGridGameGameMode::PieceSelected(AGamePiece* Piece)
@@ -245,7 +287,7 @@ void AGridGameGameMode::PieceSelected(AGamePiece* Piece)
 		}
 	}
 
-	for (FVector TileCoordinate : ValidMoveDestinations)
+	for (const FVector TileCoordinate : ValidMoveDestinations)
 	{
 		if (GridMap.Contains(TileCoordinate))
 		{
@@ -256,7 +298,7 @@ void AGridGameGameMode::PieceSelected(AGamePiece* Piece)
 
 void AGridGameGameMode::PieceDeselected()
 {
-	for (FVector TileCoordinate : ValidMoveDestinations)
+	for (const FVector TileCoordinate : ValidMoveDestinations)
 	{
 		if (GridMap.Contains(TileCoordinate))
 		{
