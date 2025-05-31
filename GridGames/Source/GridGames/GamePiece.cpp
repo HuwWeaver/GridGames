@@ -34,6 +34,17 @@ void AGamePiece::BeginPlay()
 	
 }
 
+bool AGamePiece::CanPromote()
+{
+	return false;
+}
+
+void AGamePiece::PromotePiece()
+{
+	// Default implementation does nothing, override in derived classes if needed
+	UE_LOG(LogTemp, Warning, TEXT("PromotePiece called on %s, but no promotion logic implemented."), *GetName());
+}
+
 // Called every frame
 void AGamePiece::Tick(float DeltaTime)
 {
@@ -74,6 +85,8 @@ void AGamePiece::Move(const AGridTile* TargetTile, const float& TileSize)
 	CurrentCoordinate = TargetTile->GetCoordinates();
 
 	NumMovesMade++;
+
+	if(CanPromote()) PromotePiece();
 }
 
 void AGamePiece::PieceCaptured()

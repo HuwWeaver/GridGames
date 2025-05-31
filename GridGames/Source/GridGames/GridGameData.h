@@ -23,7 +23,7 @@ struct GRIDGAMES_API FPieceSetupProperties : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMesh* PieceMesh{ nullptr };
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UMaterialInstance* Material;
+	UMaterialInstance* Material{ nullptr };
 };
 
 UENUM(BlueprintType)

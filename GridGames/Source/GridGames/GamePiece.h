@@ -38,6 +38,9 @@ protected:
 	FPieceMovementData MovementData;
 	FName PieceName{ "" };
 
+	virtual bool CanPromote();
+	virtual void PromotePiece();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
