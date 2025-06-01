@@ -16,5 +16,6 @@ class GRIDGAMES_API AChessPiece : public AGamePiece
 	
 private:
 	virtual bool CanPromote() override;
+	UFUNCTION(BlueprintCallable)
 	virtual void PromotePiece() override;
 };
