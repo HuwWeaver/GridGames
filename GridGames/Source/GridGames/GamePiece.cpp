@@ -39,7 +39,13 @@ bool AGamePiece::CanPromote()
 	return false;
 }
 
-void AGamePiece::PromotePiece()
+void AGamePiece::TriggerPromotion()
+{
+	// Default implementation does nothing, override in derived classes if needed
+	UE_LOG(LogTemp, Warning, TEXT("TriggerPromotion called on %s, but no promotion logic implemented."), *GetName());
+}
+
+void AGamePiece::PromotePiece(const FName& NewPieceName)
 {
 	// Default implementation does nothing, override in derived classes if needed
 	UE_LOG(LogTemp, Warning, TEXT("PromotePiece called on %s, but no promotion logic implemented."), *GetName());
@@ -86,7 +92,7 @@ void AGamePiece::Move(const AGridTile* TargetTile, const float& TileSize)
 
 	NumMovesMade++;
 
-	if(CanPromote()) PromotePiece();
+	if(CanPromote()) TriggerPromotion();
 }
 
 void AGamePiece::PieceCaptured()

@@ -298,7 +298,7 @@ void AGridGameGameMode::PieceSelected(AGamePiece* Piece)
 
 void AGridGameGameMode::PieceDeselected()
 {
-	for (const FVector TileCoordinate : ValidMoveDestinations)
+	for (const FVector& TileCoordinate : ValidMoveDestinations)
 	{
 		if (GridMap.Contains(TileCoordinate))
 		{

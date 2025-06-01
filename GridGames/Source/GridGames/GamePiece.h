@@ -39,7 +39,8 @@ protected:
 	FName PieceName{ "" };
 
 	virtual bool CanPromote();
-	virtual void PromotePiece();
+	virtual void TriggerPromotion();
+	virtual void PromotePiece(const FName& NewPieceName);
 
 public:	
 	// Called every frame
