@@ -39,8 +39,7 @@ protected:
 	FName PieceName{ "" };
 
 	virtual bool CanPromote();
-	virtual void TriggerPromotion();
-	virtual void PromotePiece(const FName& NewPieceName);
+	void TriggerPromotion();
 
 public:	
 	// Called every frame
@@ -57,4 +56,5 @@ public:
 	void Init(const FName& Name, const FPieceSetupProperties& SetupData, const FPieceMovementData& MoveData);
 	void Move(const AGridTile* TargetTile, const float& TileSize);
 	void PieceCaptured();
+	void Promote();
 };

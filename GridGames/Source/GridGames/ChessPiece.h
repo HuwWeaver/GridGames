@@ -16,12 +16,4 @@ class GRIDGAMES_API AChessPiece : public AGamePiece
 	
 private:
 	virtual bool CanPromote() override;
-	virtual void TriggerPromotion() override;
-
-	UFUNCTION(BlueprintCallable)
-	virtual void PromotePiece(const FName& NewPieceName) override;
-
-public:
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnTriggerPromotion();
 };

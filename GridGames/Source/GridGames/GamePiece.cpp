@@ -2,9 +2,11 @@
 
 
 #include "GamePiece.h"
+#include "Kismet/GameplayStatics.h"
 #include "Components/SceneComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "GridGameGameMode.h"
 
 // Sets default values
 AGamePiece::AGamePiece()
@@ -31,7 +33,6 @@ AGamePiece::AGamePiece()
 void AGamePiece::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 bool AGamePiece::CanPromote()
@@ -41,14 +42,9 @@ bool AGamePiece::CanPromote()
 
 void AGamePiece::TriggerPromotion()
 {
-	// Default implementation does nothing, override in derived classes if needed
-	UE_LOG(LogTemp, Warning, TEXT("TriggerPromotion called on %s, but no promotion logic implemented."), *GetName());
-}
-
-void AGamePiece::PromotePiece(const FName& NewPieceName)
-{
-	// Default implementation does nothing, override in derived classes if needed
-	UE_LOG(LogTemp, Warning, TEXT("PromotePiece called on %s, but no promotion logic implemented."), *GetName());
+	//Tell Gamemode to Start Promotion Process
+	AGridGameGameMode* GameMode = Cast<AGridGameGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	GameMode->OnTriggerPromotion(this);
 }
 
 // Called every frame
@@ -98,4 +94,10 @@ void AGamePiece::Move(const AGridTile* TargetTile, const float& TileSize)
 void AGamePiece::PieceCaptured()
 {
 	Destroy();
+}
+
+void AGamePiece::Promote()
+{
+	//TODO: Implement Promotion Logic
+	//Will be very similar to Init function
 }

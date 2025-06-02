@@ -308,3 +308,9 @@ void AGridGameGameMode::PieceDeselected()
 
 	ValidMoveDestinations.Empty();
 }
+
+void AGridGameGameMode::OnTriggerPromotion(AGamePiece* Piece)
+{
+	//To be implemented in derived classes
+	UE_LOG(LogTemp, Warning, TEXT("OnTriggerPromotion called for Piece: %s"), *Piece->GetPieceName().ToString());
+}

@@ -58,6 +58,7 @@ public:
 	void TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile);
 	void PieceSelected(AGamePiece* Piece);
 	void PieceDeselected();
+	virtual void OnTriggerPromotion(AGamePiece* Piece);
 
 	AGamePiece* GetLastMovedPiece() const { return LastMovedPiece; }
 

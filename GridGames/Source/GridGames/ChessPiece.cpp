@@ -18,12 +18,3 @@ bool AChessPiece::CanPromote()
 
 	return false;
 }
-
-void AChessPiece::TriggerPromotion()
-{
-	OnTriggerPromotion();
-}
-
-void AChessPiece::PromotePiece(const FName& NewPieceName)
-{
-}
