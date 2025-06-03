@@ -49,6 +49,9 @@ public:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bIsWhite{ true };
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

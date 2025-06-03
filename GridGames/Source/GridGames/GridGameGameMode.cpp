@@ -287,7 +287,7 @@ void AGridGameGameMode::PieceSelected(AGamePiece* Piece)
 		}
 	}
 
-	for (const FVector TileCoordinate : ValidMoveDestinations)
+	for (const FVector& TileCoordinate : ValidMoveDestinations)
 	{
 		if (GridMap.Contains(TileCoordinate))
 		{
