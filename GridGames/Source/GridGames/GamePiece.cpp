@@ -2,9 +2,11 @@
 
 
 #include "GamePiece.h"
+#include "Kismet/GameplayStatics.h"
 #include "Components/SceneComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "GridGameGameMode.h"
 
 // Sets default values
 AGamePiece::AGamePiece()
@@ -31,7 +33,18 @@ AGamePiece::AGamePiece()
 void AGamePiece::BeginPlay()
 {
 	Super::BeginPlay();
-	
+}
+
+bool AGamePiece::CanPromote()
+{
+	return false;
+}
+
+void AGamePiece::TriggerPromotion()
+{
+	//Tell Gamemode to Start Promotion Process
+	AGridGameGameMode* GameMode = Cast<AGridGameGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	GameMode->OnTriggerPromotion(this);
 }
 
 // Called every frame
@@ -41,9 +54,10 @@ void AGamePiece::Tick(float DeltaTime)
 
 }
 
-void AGamePiece::Init(const FText& Name, const FPieceSetupProperties& SetupData, const FPieceMovementData& MoveData)
+void AGamePiece::Init(const FName& Name, const FPieceSetupProperties& SetupData, const FPieceMovementData& MoveData)
 {
-	NameDisplay->SetText(Name);
+	PieceName = Name;
+	NameDisplay->SetText(FText::FromName(PieceName));
 	SetupProperties = SetupData;
 	CurrentCoordinate = SetupProperties.StartingCoordinates;
 	MovementData = MoveData;
@@ -69,12 +83,24 @@ void AGamePiece::Move(const AGridTile* TargetTile, const float& TileSize)
 	FVector TargetLocation = TargetTile->GetActorLocation() + FVector(TileSize / 2, TileSize / 2, 100);
 	SetActorLocation(TargetLocation, false, 0, ETeleportType::ResetPhysics);
 
+	PastCoordinates.Add(CurrentCoordinate);
 	CurrentCoordinate = TargetTile->GetCoordinates();
 
-	MovesMade++;
+	NumMovesMade++;
+
+	if(CanPromote()) TriggerPromotion();
 }
 
 void AGamePiece::PieceCaptured()
 {
 	Destroy();
+}
+
+void AGamePiece::Promote(const FName& NewPieceName, const FPieceMovementData& NewMoveData)
+{
+	PieceName = NewPieceName;
+	NameDisplay->SetText(FText::FromName(PieceName));
+	MovementData = NewMoveData;
+
+	//TODO: Update Piece Mesh
 }

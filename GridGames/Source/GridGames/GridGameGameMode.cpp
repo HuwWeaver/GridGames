@@ -21,14 +21,16 @@ void AGridGameGameMode::CreateGrid()
 
 	for (size_t Column = 0; Column < GridColumns; Column++){
 		for (size_t Row = 0; Row < GridRows; Row++) {
+			for (size_t Layer = 0; Layer < GridLayers; Layer++) {
 
-			FVector Location = FVector(Row * TileSize, Column * TileSize, 0.0f);
-			FRotator Rotation(0,0,0);
-			FActorSpawnParameters SpawnInfo;
+				FVector Location = FVector(Row * TileSize, Column * TileSize, Layer * 500.0f);
+				FRotator Rotation(0, 0, 0);
+				FActorSpawnParameters SpawnInfo;
 
-			AGridTile* Tile = GetWorld()->SpawnActor<AGridTile>(GridTileClass, Location, Rotation, SpawnInfo);
-			Tile->Init(FVector(Column, Row, 0));
-			GridMap.Add(FVector(Column, Row, 0), Tile);
+				AGridTile* Tile = GetWorld()->SpawnActor<AGridTile>(GridTileClass, Location, Rotation, SpawnInfo);
+				Tile->Init(FVector(Column, Row, Layer));
+				GridMap.Add(FVector(Column, Row, Layer), Tile);
+			}
 		}
 	}
 
@@ -65,8 +67,8 @@ void AGridGameGameMode::PopulateBoard()
 			StringName = StringName.LeftChop(1);
 		}
 
-		FText PieceName = FText::FromString(StringName);
-		FPieceMovementData* MoveData = PiecesMovementData->FindRow<FPieceMovementData>(UKismetStringLibrary::Conv_StringToName(StringName), "");
+		FName PieceName = UKismetStringLibrary::Conv_StringToName(StringName);
+		FPieceMovementData* MoveData = PiecesMovementData->FindRow<FPieceMovementData>(PieceName, "");
 
 		Piece->Init(PieceName, *Row, *MoveData);
 	}
@@ -75,8 +77,8 @@ void AGridGameGameMode::PopulateBoard()
 	UE_LOG(LogTemp, Display, TEXT("Board Populated!"));
 }
 
-void AGridGameGameMode::StepMove(const AGamePiece* Piece, const FPieceMovementProperties& Move)
-{
+void AGridGameGameMode::StepMove(AGamePiece* Piece, const FPieceMovementProperties& Move)
+{	
 	FVector MovementVector = Move.MovementVector;
 	if (!Piece->GetSetupProperties().bWhite) MovementVector *= -1;
 
@@ -92,7 +94,14 @@ void AGridGameGameMode::StepMove(const AGamePiece* Piece, const FPieceMovementPr
 	if (!TargetTile.GetOccupied())
 	{
 		//Empty Tile = Valid Move
-		ValidTiles.Add(&TargetTile);
+		TArray<AGamePiece*> MovedPieces;
+		MovedPieces.Add(Piece);
+		TArray<FVector> TargetCoordinates;
+		TargetCoordinates.Add(TargetCoordinate);
+		
+		ValidMoveDestinations.Add(TargetCoordinate);
+		ValidMoveOutcomes.Add(TargetCoordinate, FMoveOutcome(MovedPieces, TargetCoordinates));
+
 		return;
 	}
 
@@ -112,9 +121,16 @@ void AGridGameGameMode::StepMove(const AGamePiece* Piece, const FPieceMovementPr
 
 	if (Move.bCanCapture)
 	{
-		//Tile occupied by opposing team &&
-		//Move can capture = Valid Move
-		ValidTiles.Add(&TargetTile);
+		//Tile occupied by opposing team && Move can capture = Valid Move
+		TArray<AGamePiece*> MovedPieces;
+		MovedPieces.Add(Piece);
+		TArray<FVector> TargetCoordinates;
+		TargetCoordinates.Add(TargetCoordinate);
+		TArray<AGamePiece*> CapturedPieces;
+		CapturedPieces.Add(OccupyingPiece);
+
+		ValidMoveDestinations.Add(TargetCoordinate);
+		ValidMoveOutcomes.Add(TargetCoordinate, FMoveOutcome(MovedPieces, TargetCoordinates, CapturedPieces));
 		return;
 	}
 
@@ -122,13 +138,13 @@ void AGridGameGameMode::StepMove(const AGamePiece* Piece, const FPieceMovementPr
 	return;
 }
 
-void AGridGameGameMode::RangeMove(const AGamePiece* Piece, const FPieceMovementProperties& Move, const int& RangeLimit)
+void AGridGameGameMode::RangeMove(AGamePiece* Piece, const FPieceMovementProperties& Move, const int& RangeLimit)
 {
 	FVector MovementVector = Move.MovementVector;
 	if (!Piece->GetSetupProperties().bWhite) MovementVector *= -1;
 
 	FVector TargetCoordinate = Piece->GetCurrentCoordinate() + MovementVector;
-	int RangeLeft = RangeLimit - 1;
+	int RemainingRange = RangeLimit - 1;
 
 	while (GridMap.Contains(TargetCoordinate))
 	{
@@ -137,7 +153,13 @@ void AGridGameGameMode::RangeMove(const AGamePiece* Piece, const FPieceMovementP
 		if (!TargetTile.GetOccupied())
 		{
 			//Empty Tile = Valid Move
-			ValidTiles.Add(&TargetTile);
+			TArray<AGamePiece*> MovedPieces;
+			MovedPieces.Add(Piece);
+			TArray<FVector> TargetCoordinates;
+			TargetCoordinates.Add(TargetCoordinate);
+
+			ValidMoveDestinations.Add(TargetCoordinate);
+			ValidMoveOutcomes.Add(TargetCoordinate, FMoveOutcome(MovedPieces, TargetCoordinates));
 
 			if (RangeLimit == -99)
 			{
@@ -147,7 +169,7 @@ void AGridGameGameMode::RangeMove(const AGamePiece* Piece, const FPieceMovementP
 				continue;
 			}
 
-			if (RangeLeft <= 0)
+			if (RemainingRange <= 0)
 			{
 				//Range Limit Reached
 				return;
@@ -156,7 +178,7 @@ void AGridGameGameMode::RangeMove(const AGamePiece* Piece, const FPieceMovementP
 			{
 				//Range Remaining - Move to Next Tile
 				TargetCoordinate = TargetCoordinate + MovementVector;
-				RangeLeft--;
+				RemainingRange--;
 				continue;
 			}
 		}
@@ -177,9 +199,16 @@ void AGridGameGameMode::RangeMove(const AGamePiece* Piece, const FPieceMovementP
 
 		if (Move.bCanCapture)
 		{
-			//Tile occupied by opposing team &&
-			//Move can capture = Valid Move
-			ValidTiles.Add(&TargetTile);
+			//Tile occupied by opposing team && Move can capture = Valid Move
+			TArray<AGamePiece*> MovedPieces;
+			MovedPieces.Add(Piece);
+			TArray<FVector> TargetCoordinates;
+			TargetCoordinates.Add(TargetCoordinate);
+			TArray<AGamePiece*> CapturedPieces;
+			CapturedPieces.Add(OccupyingPiece);
+
+			ValidMoveDestinations.Add(TargetCoordinate);
+			ValidMoveOutcomes.Add(TargetCoordinate, FMoveOutcome(MovedPieces, TargetCoordinates, CapturedPieces));
 			return;
 		}
 
@@ -188,30 +217,50 @@ void AGridGameGameMode::RangeMove(const AGamePiece* Piece, const FPieceMovementP
 	}
 }
 
-void AGridGameGameMode::OtherMove(const AGamePiece* Piece, const FPieceMovementProperties& Move)
+void AGridGameGameMode::OtherMove(AGamePiece* Piece, const FPieceMovementProperties& Move)
 {
 }
 
 void AGridGameGameMode::TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile)
 {
-	if (ValidTiles.Contains(TargetTile))
+	if (!ValidMoveDestinations.Contains(TargetTile->GetCoordinates()))
 	{
-		if (TargetTile->GetOccupied())
-		{
-			TargetTile->GetOccupyingPiece()->PieceCaptured();
-		}
-
-		Piece->Move(TargetTile, TileSize);
-		PieceMoved.Broadcast();
-
-		PieceDeselected();
+		//TODO: Remove LogTemp log, implement more robust method
+		UE_LOG(LogTemp, Error, TEXT("Target Coordinate not contained in Valid Move Destinations"));
+		return;
 	}
+	
+	if (!ValidMoveOutcomes.Contains(TargetTile->GetCoordinates()))
+	{
+		//TODO: Remove LogTemp log, implement more robust method
+		UE_LOG(LogTemp, Error, TEXT("Target Coordinate not contained in Valid Move Outcomes"));
+		return;
+	}
+
+	FMoveOutcome MoveOutcome = ValidMoveOutcomes.FindRef(TargetTile->GetCoordinates());
+
+	for (int i = 0; i < MoveOutcome.MovedPieces.Num(); i++)
+	{
+		AGamePiece* PieceToMove = MoveOutcome.MovedPieces[i];
+		FVector TargetCoordinate = MoveOutcome.TargetCoordinates[i];
+		PieceToMove->Move(GridMap.FindRef(TargetCoordinate), TileSize);
+	}
+
+	for (AGamePiece* PieceToCapture : MoveOutcome.CapturedPieces)
+	{
+		PieceToCapture->PieceCaptured();
+	}
+
+	LastMovedPiece = Piece;
+	PieceMoved.Broadcast();
+
+	PieceDeselected();
 }
 
 void AGridGameGameMode::PieceSelected(AGamePiece* Piece)
 {
 	FPieceMovementData MovementData = Piece->GetMovementData();
-	ValidTiles.Empty();
+	ValidMoveDestinations.Empty();
 
 	for (FPieceMovementProperties& Move : MovementData.FullMoveList)
 	{
@@ -238,18 +287,30 @@ void AGridGameGameMode::PieceSelected(AGamePiece* Piece)
 		}
 	}
 
-	for (AGridTile* Tile : ValidTiles)
+	for (const FVector TileCoordinate : ValidMoveDestinations)
 	{
-		Tile->ShowValidMove(true);
+		if (GridMap.Contains(TileCoordinate))
+		{
+			GridMap.FindRef(TileCoordinate)->ShowValidMove(true);
+		}
 	}
 }
 
 void AGridGameGameMode::PieceDeselected()
 {
-	for (AGridTile* Tile : ValidTiles)
+	for (const FVector& TileCoordinate : ValidMoveDestinations)
 	{
-		Tile->ShowValidMove(false);
+		if (GridMap.Contains(TileCoordinate))
+		{
+			GridMap.FindRef(TileCoordinate)->ShowValidMove(false);
+		}
 	}
 
-	ValidTiles.Empty();
+	ValidMoveDestinations.Empty();
+}
+
+void AGridGameGameMode::OnTriggerPromotion(AGamePiece* Piece)
+{
+	//To be implemented in derived classes
+	UE_LOG(LogTemp, Warning, TEXT("OnTriggerPromotion called for Piece: %s"), *Piece->GetPieceName().ToString());
 }

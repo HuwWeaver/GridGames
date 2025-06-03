@@ -8,6 +8,8 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GridGameData.generated.h"
 
+class AGamePiece;
+
 
 USTRUCT(BlueprintType)
 struct GRIDGAMES_API FPieceSetupProperties : public FTableRowBase
@@ -21,7 +23,7 @@ struct GRIDGAMES_API FPieceSetupProperties : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMesh* PieceMesh{ nullptr };
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UMaterialInstance* Material;
+	UMaterialInstance* Material{ nullptr };
 };
 
 UENUM(BlueprintType)
@@ -46,6 +48,8 @@ struct GRIDGAMES_API FPieceMovementProperties
 	bool bCanCapture{ true };
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int RangeLimit{ 0 };
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FName MoveName{ "" };
 };
 
 USTRUCT(BlueprintType)
@@ -57,9 +61,18 @@ struct GRIDGAMES_API FPieceMovementData : public FTableRowBase
 	TArray<FPieceMovementProperties> FullMoveList;
 };
 
+USTRUCT(BlueprintType)
+struct GRIDGAMES_API FMoveOutcome
+{
+	GENERATED_BODY()
+
+	TArray<AGamePiece*> MovedPieces;
+	TArray<FVector> TargetCoordinates;
+	TArray<AGamePiece*> CapturedPieces;
+};
+
 UCLASS()
 class GRIDGAMES_API UGridGameData : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
-	
 };

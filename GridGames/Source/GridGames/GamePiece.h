@@ -32,9 +32,14 @@ protected:
 	virtual void BeginPlay() override;
 
 	FVector CurrentCoordinate{0,0,0};
-	int MovesMade{ 0 };
+	TArray<FVector> PastCoordinates;
+	int NumMovesMade{ 0 };
 	FPieceSetupProperties SetupProperties;
 	FPieceMovementData MovementData;
+	FName PieceName{ "" };
+
+	virtual bool CanPromote();
+	void TriggerPromotion();
 
 public:	
 	// Called every frame
@@ -42,10 +47,14 @@ public:
 	
 	//TODO: Send via Pointer / Refernce instead?
 	FVector GetCurrentCoordinate() const { return CurrentCoordinate; };
+	TArray<FVector> GetPastCoordinates() const { return PastCoordinates; };
 	FPieceSetupProperties GetSetupProperties() const { return SetupProperties; };
 	FPieceMovementData GetMovementData() const { return MovementData; };
+	FName GetPieceName() const { return PieceName; };
+	int GetNumMovesMade() const { return NumMovesMade; };
 
-	void Init(const FText& Name, const FPieceSetupProperties& SetupData, const FPieceMovementData& MoveData);
+	void Init(const FName& Name, const FPieceSetupProperties& SetupData, const FPieceMovementData& MoveData);
 	void Move(const AGridTile* TargetTile, const float& TileSize);
 	void PieceCaptured();
+	void Promote(const FName& NewPieceName, const FPieceMovementData& NewMoveData);
 };
