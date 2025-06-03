@@ -24,7 +24,9 @@ class GRIDGAMES_API AGridTile : public AActor
 	UStaticMeshComponent* TileMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	UTextRenderComponent* CoordinateDisplay;
+	UTextRenderComponent* CoordinateDisplayFront;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UTextRenderComponent* CoordinateDisplayBack;
 
 	UPROPERTY(EditAnywhere)
 	UBoxComponent* CollisionBox;
@@ -33,35 +35,39 @@ public:
 	// Sets default values for this actor's properties
 	AGridTile();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-private:
-	UPROPERTY(EditAnywhere)
-	UMaterialInstance* WhiteMaterial;
-
-	UPROPERTY(EditAnywhere)
-	UMaterialInstance* BlackMaterial;
-
-protected:
-	UPROPERTY(BlueprintReadWrite)
-	bool bOccupied{ false };
-	UPROPERTY(BlueprintReadWrite)
-	AGamePiece* OccupyingPiece{ nullptr };
-
-	FVector Coordinates;
-
-public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	//TODO: Send via Pointer / Refernce instead?
 	bool GetOccupied() const { return bOccupied; }
 	FVector GetCoordinates() const { return Coordinates; };
-	
+
 	AGamePiece* GetOccupyingPiece() const { return OccupyingPiece; }
 
 	void Init(const FVector& InCoordinates);
 	void ShowValidMove(bool bShow);
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool bOccupied{ false };
+	UPROPERTY(BlueprintReadWrite)
+	AGamePiece* OccupyingPiece{ nullptr };
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsLightTile{};
+	FVector Coordinates{};
+
+private:
+	UPROPERTY(EditAnywhere)
+	UMaterialInstance* WhiteMaterial{};
+
+	UPROPERTY(EditAnywhere)
+	UMaterialInstance* BlackMaterial{};
+	UPROPERTY(EditAnywhere)
+	UMaterialInstance* LightHighlightMaterial{};
+	UPROPERTY(EditAnywhere)
+	UMaterialInstance* DarkHighlightMaterial{};
 };

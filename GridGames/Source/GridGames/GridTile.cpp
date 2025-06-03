@@ -20,14 +20,23 @@ AGridTile::AGridTile()
 	TileMesh->SetupAttachment(Root);
 	TileMesh->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
 
-	CoordinateDisplay = CreateDefaultSubobject<UTextRenderComponent>(TEXT("CoordinateDisplay"));
-	CoordinateDisplay->SetupAttachment(TileMesh);
-	CoordinateDisplay->SetText(FText::FromString("(0,0)"));
-	CoordinateDisplay->SetRelativeRotation(FRotator(0.0f, 90.0f, 90.0f));
-	CoordinateDisplay->SetRelativeLocation(FVector(-100.0f, 100.0f, 10.0f));
-	CoordinateDisplay->SetHorizontalAlignment(EHTA_Center);
-	CoordinateDisplay->SetVerticalAlignment(EVRTA_TextCenter);
-	CoordinateDisplay->SetWorldSize(75.0f);
+	CoordinateDisplayFront = CreateDefaultSubobject<UTextRenderComponent>(TEXT("CoordinateDisplayFront"));
+	CoordinateDisplayFront->SetupAttachment(TileMesh);
+	CoordinateDisplayFront->SetText(FText::FromString("(0,0)"));
+	CoordinateDisplayFront->SetRelativeRotation(FRotator(90.0f, 0.0f, 90.0f));
+	CoordinateDisplayFront->SetRelativeLocation(FVector(-100.0f, 25.0f, 10.0f));
+	CoordinateDisplayFront->SetHorizontalAlignment(EHTA_Center);
+	CoordinateDisplayFront->SetVerticalAlignment(EVRTA_TextCenter);
+	CoordinateDisplayFront->SetWorldSize(25.0f);
+
+	CoordinateDisplayBack = CreateDefaultSubobject<UTextRenderComponent>(TEXT("CoordinateDisplayBack"));
+	CoordinateDisplayBack->SetupAttachment(TileMesh);
+	CoordinateDisplayBack->SetText(FText::FromString("(0,0)"));
+	CoordinateDisplayBack->SetRelativeRotation(FRotator(90.0f, 90.0f, 0.0f));
+	CoordinateDisplayBack->SetRelativeLocation(FVector(-100.0f, 175.0f, 10.0f));
+	CoordinateDisplayBack->SetHorizontalAlignment(EHTA_Center);
+	CoordinateDisplayBack->SetVerticalAlignment(EVRTA_TextCenter);
+	CoordinateDisplayBack->SetWorldSize(25.0f);
 
 	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
 	CollisionBox->SetupAttachment(TileMesh);
@@ -52,14 +61,17 @@ void AGridTile::Tick(float DeltaTime)
 void AGridTile::Init(const FVector& InCoordinates)
 {
 	Coordinates = InCoordinates;
-	CoordinateDisplay->SetText(FText::FromString(FString::Printf(TEXT("(%i,%i)"), FMath::RoundToInt(Coordinates.X), FMath::RoundToInt(Coordinates.Y))));
+	CoordinateDisplayFront->SetText(FText::FromString(FString::Printf(TEXT("(%i,%i)"), FMath::RoundToInt(Coordinates.X), FMath::RoundToInt(Coordinates.Y))));
+	CoordinateDisplayBack->SetText(FText::FromString(FString::Printf(TEXT("(%i,%i)"), FMath::RoundToInt(Coordinates.X), FMath::RoundToInt(Coordinates.Y))));
 
 	if (FMath::RoundToInt(Coordinates.X + Coordinates.Y) % 2 == 0)
 	{
+		bIsLightTile = true;
 		TileMesh->SetMaterial(0, WhiteMaterial);
 	}
 	else
 	{
+		bIsLightTile = false;
 		TileMesh->SetMaterial(0, BlackMaterial);
 	}
 }
@@ -68,17 +80,24 @@ void AGridTile::ShowValidMove(bool bShow)
 {
 	if (bShow)
 	{
-		CoordinateDisplay->SetTextRenderColor(FColor(0, 255, 0));
-	}
-	else
-	{
-		if (bOccupied)
+		if (bIsLightTile)
 		{
-			CoordinateDisplay->SetTextRenderColor(FColor(255, 0, 0));
+			TileMesh->SetMaterial(0, LightHighlightMaterial);
 		}
 		else
 		{
-			CoordinateDisplay->SetTextRenderColor(FColor(255, 255, 255));
+			TileMesh->SetMaterial(0, DarkHighlightMaterial);
+		}
+	}
+	else
+	{
+		if (bIsLightTile)
+		{
+			TileMesh->SetMaterial(0, WhiteMaterial);
+		}
+		else
+		{
+			TileMesh->SetMaterial(0, BlackMaterial);
 		}
 	}
 }
