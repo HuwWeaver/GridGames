@@ -56,18 +56,21 @@ protected:
 	UPROPERTY(BlueprintReadWrite)
 	AGamePiece* OccupyingPiece{ nullptr };
 
-	UPROPERTY(BlueprintReadOnly)
-	bool bIsLightTile{};
 	FVector Coordinates{};
+	FString ChessNotationCoordinates{};
 
 private:
+
+	char NthLetter(int n);
+
 	UPROPERTY(EditAnywhere)
 	UMaterialInstance* WhiteMaterial{};
-
 	UPROPERTY(EditAnywhere)
 	UMaterialInstance* BlackMaterial{};
 	UPROPERTY(EditAnywhere)
 	UMaterialInstance* LightHighlightMaterial{};
 	UPROPERTY(EditAnywhere)
 	UMaterialInstance* DarkHighlightMaterial{};
+
+	bool bIsLightTile{};
 };

@@ -22,7 +22,7 @@ AGridTile::AGridTile()
 
 	CoordinateDisplayFront = CreateDefaultSubobject<UTextRenderComponent>(TEXT("CoordinateDisplayFront"));
 	CoordinateDisplayFront->SetupAttachment(TileMesh);
-	CoordinateDisplayFront->SetText(FText::FromString("(0,0)"));
+	CoordinateDisplayFront->SetText(FText::FromString("X1"));
 	CoordinateDisplayFront->SetRelativeRotation(FRotator(90.0f, 0.0f, 90.0f));
 	CoordinateDisplayFront->SetRelativeLocation(FVector(-100.0f, 25.0f, 10.0f));
 	CoordinateDisplayFront->SetHorizontalAlignment(EHTA_Center);
@@ -31,7 +31,7 @@ AGridTile::AGridTile()
 
 	CoordinateDisplayBack = CreateDefaultSubobject<UTextRenderComponent>(TEXT("CoordinateDisplayBack"));
 	CoordinateDisplayBack->SetupAttachment(TileMesh);
-	CoordinateDisplayBack->SetText(FText::FromString("(0,0)"));
+	CoordinateDisplayBack->SetText(FText::FromString("X1"));
 	CoordinateDisplayBack->SetRelativeRotation(FRotator(90.0f, 90.0f, 0.0f));
 	CoordinateDisplayBack->SetRelativeLocation(FVector(-100.0f, 175.0f, 10.0f));
 	CoordinateDisplayBack->SetHorizontalAlignment(EHTA_Center);
@@ -51,6 +51,11 @@ void AGridTile::BeginPlay()
 	
 }
 
+char AGridTile::NthLetter(int n)
+{
+	return "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[n - 1];
+}
+
 // Called every frame
 void AGridTile::Tick(float DeltaTime)
 {
@@ -61,8 +66,10 @@ void AGridTile::Tick(float DeltaTime)
 void AGridTile::Init(const FVector& InCoordinates)
 {
 	Coordinates = InCoordinates;
-	CoordinateDisplayFront->SetText(FText::FromString(FString::Printf(TEXT("(%i,%i)"), FMath::RoundToInt(Coordinates.X), FMath::RoundToInt(Coordinates.Y))));
-	CoordinateDisplayBack->SetText(FText::FromString(FString::Printf(TEXT("(%i,%i)"), FMath::RoundToInt(Coordinates.X), FMath::RoundToInt(Coordinates.Y))));
+	ChessNotationCoordinates = FString::Printf(TEXT("%s%s"), *FString::Chr(NthLetter(1 + FMath::RoundToInt(Coordinates.X))), *FString::Printf(TEXT("%i"), 1 + FMath::RoundToInt(Coordinates.Y)));
+
+	CoordinateDisplayFront->SetText(FText::FromString(ChessNotationCoordinates));
+	CoordinateDisplayBack->SetText(FText::FromString(ChessNotationCoordinates));
 
 	if (FMath::RoundToInt(Coordinates.X + Coordinates.Y) % 2 == 0)
 	{
