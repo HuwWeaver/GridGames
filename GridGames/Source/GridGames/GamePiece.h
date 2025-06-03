@@ -56,5 +56,5 @@ public:
 	void Init(const FName& Name, const FPieceSetupProperties& SetupData, const FPieceMovementData& MoveData);
 	void Move(const AGridTile* TargetTile, const float& TileSize);
 	void PieceCaptured();
-	void Promote();
+	void Promote(const FName& NewPieceName, const FPieceMovementData& NewMoveData);
 };

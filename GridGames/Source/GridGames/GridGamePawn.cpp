@@ -80,9 +80,7 @@ void AGridGamePawn::MoveInput(const FInputActionValue& Value)
 }
 
 void AGridGamePawn::SelectInput()
-{
-	UE_LOG(LogTemp, Display, TEXT("Selecting..."));
-	
+{	
 	FHitResult HitResult;
 
     if (bGamePieceSelected)
@@ -116,13 +114,10 @@ void AGridGamePawn::DeselectInput()
 	bGamePieceSelected = false;
 	SelectedPiece = nullptr;
 	GameMode->PieceDeselected();
-	UE_LOG(LogTemp, Display, TEXT("Game Piece Deslected"));
 }
 
 void AGridGamePawn::OnPieceMoved()
 {
 	bGamePieceSelected = false;
 	SelectedPiece = nullptr;
-
-	UE_LOG(LogTemp, Display, TEXT("Game Piece Deslected"));
 }

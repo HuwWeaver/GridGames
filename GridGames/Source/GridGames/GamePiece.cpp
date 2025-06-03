@@ -57,7 +57,7 @@ void AGamePiece::Tick(float DeltaTime)
 void AGamePiece::Init(const FName& Name, const FPieceSetupProperties& SetupData, const FPieceMovementData& MoveData)
 {
 	PieceName = Name;
-	NameDisplay->SetText(FText::FromName(Name));
+	NameDisplay->SetText(FText::FromName(PieceName));
 	SetupProperties = SetupData;
 	CurrentCoordinate = SetupProperties.StartingCoordinates;
 	MovementData = MoveData;
@@ -96,8 +96,11 @@ void AGamePiece::PieceCaptured()
 	Destroy();
 }
 
-void AGamePiece::Promote()
+void AGamePiece::Promote(const FName& NewPieceName, const FPieceMovementData& NewMoveData)
 {
-	//TODO: Implement Promotion Logic
-	//Will be very similar to Init function
+	PieceName = NewPieceName;
+	NameDisplay->SetText(FText::FromName(PieceName));
+	MovementData = NewMoveData;
+
+	//TODO: Update Piece Mesh
 }

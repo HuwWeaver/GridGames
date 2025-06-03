@@ -221,18 +221,18 @@ void AChessGameMode::PromotePiece(AGamePiece* Piece, const FName& NewPieceName)
 {
 	if (Piece == nullptr)
 	{
+		//TODO: Remove LogTemp log, implement more robust method
 		UE_LOG(LogTemp, Error, TEXT("PromotePiece called with nullptr Piece"));
 		return;
 	}
 	if (NewPieceName == "")
 	{
+		//TODO: Remove LogTemp log, implement more robust method
 		UE_LOG(LogTemp, Error, TEXT("PromotePiece called with empty NewPieceName"));
 		return;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("PromotePiece called for Piece: %s, with promotion to: %s"), *Piece->GetPieceName().ToString(), *NewPieceName.ToString());
+	FPieceMovementData* NewMoveData = PiecesMovementData->FindRow<FPieceMovementData>(NewPieceName, "");
 
-	//Todo: Implement actual promotion logic, e.g. changing the piece type, updating visuals, etc.
-
-	Piece->Promote();
+	Piece->Promote(NewPieceName, *NewMoveData);
 }
