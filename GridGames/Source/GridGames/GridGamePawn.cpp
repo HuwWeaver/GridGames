@@ -102,8 +102,11 @@ void AGridGamePawn::SelectInput()
             SelectedPiece = Cast<AGamePiece>(HitResult.GetActor());
             if (SelectedPiece)
             {
-                bGamePieceSelected = true;
-                GameMode->PieceSelected(SelectedPiece);
+				if (SelectedPiece->GetSetupProperties().bWhite == bIsWhite)
+				{
+					bGamePieceSelected = true;
+					GameMode->PieceSelected(SelectedPiece);
+				}
             }
         }
     }

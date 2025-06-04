@@ -55,7 +55,7 @@ void AGridGameGameMode::PopulateBoard()
 
 		//X and Y are swapped for first vector as grid X axis doesn't follow world X axis, but rather follows world Y (and vice versa).
 		FVector Location = FVector(Row->StartingCoordinates.Y * TileSize, Row->StartingCoordinates.X * TileSize, 0.0) + FVector(TileSize / 2, TileSize / 2, 100);
-		FRotator Rotation(0, 0, 0);
+		FRotator Rotation = Row->bWhite ? FRotator(0,0,0) : FRotator(0,180,0);
 		FActorSpawnParameters SpawnInfo;
 
 		AGamePiece* Piece = GetWorld()->SpawnActor<AGamePiece>(GamePieceClass, Location, Rotation, SpawnInfo);

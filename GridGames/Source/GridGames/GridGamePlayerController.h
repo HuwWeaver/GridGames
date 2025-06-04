@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GridGameGameMode.h"
 #include "GameFramework/PlayerController.h"
 #include "GridGamePlayerController.generated.h"
 
@@ -17,4 +18,17 @@ class GRIDGAMES_API AGridGamePlayerController : public APlayerController
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+public:
+	UPROPERTY(BlueprintReadOnly)
+	APawn* WhitePlayerPawn{ nullptr };
+	UPROPERTY(BlueprintReadOnly)
+	APawn* BlackPlayerPawn{ nullptr };
+
+	UFUNCTION()
+	void SwitchPlayer();
+
+private:
+	bool bIsWhite{ true };
+	AGridGameGameMode* GameMode{ nullptr };
 };
