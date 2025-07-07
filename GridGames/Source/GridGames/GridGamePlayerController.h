@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GridGameGameMode.h"
 #include "GameFramework/PlayerController.h"
+#include "GridGameCameraActor.h"
 #include "GridGamePlayerController.generated.h"
 
 /**
@@ -31,4 +32,6 @@ public:
 private:
 	bool bIsWhite{ true };
 	AGridGameGameMode* GameMode{ nullptr };
+
+	AGridGameCameraActor* GameCamera{ nullptr };
 };

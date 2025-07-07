@@ -28,6 +28,10 @@ void AGridGamePlayerController::BeginPlay()
 
 	GameMode = Cast<AGridGameGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 	GameMode->PieceMoved.AddDynamic(this, &AGridGamePlayerController::SwitchPlayer);
+
+	GameCamera = GetWorld()->SpawnActor<AGridGameCameraActor>();
+	GameCamera->SwitchPlayer(bIsWhite, WhitePlayerPawn->GetActorLocation(), WhitePlayerPawn->GetActorRotation());
+	SetViewTarget(GameCamera);
 }
 
 void AGridGamePlayerController::SwitchPlayer()
@@ -36,4 +40,8 @@ void AGridGamePlayerController::SwitchPlayer()
 
 	Possess(NewPlayerPawn);
 	bIsWhite = !bIsWhite;
+
+	SetViewTarget(GameCamera);
+
+	GameCamera->SwitchPlayer(bIsWhite, NewPlayerPawn->GetActorLocation(), NewPlayerPawn->GetActorRotation());
 }

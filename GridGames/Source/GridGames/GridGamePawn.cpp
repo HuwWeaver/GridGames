@@ -15,13 +15,6 @@ AGridGamePawn::AGridGamePawn()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	RootComponent = Root;
-
-	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
-	CameraComponent->SetupAttachment(Root);
-	CameraComponent->SetRelativeRotation(FRotator(-60.0f, 0.0f, 0.0f));
 }
 
 // Called when the game starts or when spawned
@@ -37,7 +30,6 @@ void AGridGamePawn::BeginPlay()
 void AGridGamePawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void AGridGamePawn::NotifyControllerChanged()
