@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GamePiece.h"
+#include "GridGameTracker.h"
 #include "GameFramework/GameModeBase.h"
 #include "GridGameGameMode.generated.h"
 
@@ -43,6 +44,8 @@ protected:
 private:
 	void CreateGrid();
 	void PopulateBoard();
+
+	GridGameTracker GameTracker{};
 
 protected:
 	TMap<FVector, AGridTile*> GridMap;

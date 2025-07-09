@@ -2,6 +2,7 @@
 
 #include "GridGameGameMode.h"
 #include "GridGameData.h"
+
 #include "Kismet/KismetStringLibrary.h"
 #include "Kismet/BlueprintMapLibrary.h"
 #include "Kismet/GameplayStatics.h"
@@ -253,6 +254,7 @@ void AGridGameGameMode::TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile)
 
 	LastMovedPiece = Piece;
 	PieceMoved.Broadcast();
+	GameTracker.LogCompletedMove(MoveOutcome);
 
 	PieceDeselected();
 }
