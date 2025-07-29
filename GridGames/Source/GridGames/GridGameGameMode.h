@@ -45,9 +45,8 @@ private:
 	void CreateGrid();
 	void PopulateBoard();
 
-	GridGameTracker GameTracker{};
-
 protected:
+	GridGameTracker GameTracker{};
 	TMap<FVector, AGridTile*> GridMap;
 	TArray<FVector> ValidMoveDestinations;
 	TMap<FVector, FMoveOutcome> ValidMoveOutcomes;

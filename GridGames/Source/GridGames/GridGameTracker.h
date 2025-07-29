@@ -11,11 +11,13 @@ public:
 	GridGameTracker();
 	~GridGameTracker();
 
-	void LogCompletedMove(FMoveOutcome &MoveOutcome);
+	void LogCompletedMove(const FMoveOutcome &MoveOutcome);
 	char NthLetter(int n);
-	char PieceName(FString PieceName);
+	char PieceInitial(FString PieceName);
+	void LogPromotion(const FName& PromotedPieceName);
 
-	FString FullGameLog{};
+	FString GameLog{};
+	FString DisambiguatedGameLog{};
 	int TurnNumber{ 0 };
 	bool bWhiteTurn{ true };
 };
