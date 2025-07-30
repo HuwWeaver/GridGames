@@ -7,6 +7,8 @@
 #include "Kismet/BlueprintMapLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
+// Functions to set up and start the game, such as Begin Play, CreateGrid, and PopulateBoard.
+#pragma region Game Start
 // Called when the game starts or when spawned
 void AGridGameGameMode::BeginPlay()
 {
@@ -80,6 +82,51 @@ void AGridGameGameMode::PopulateBoard()
 
 	//TODO: Remove LogTemp log, implement more robust method
 	UE_LOG(LogTemp, Display, TEXT("Board Populated!"));
+}
+#pragma endregion
+
+// Functions to handle the main actions of a turn, such as Piece Selection, Valid Moved Calculation, Movement, and Piece Deselection.
+#pragma region Main Turn
+// This function is called when a game piece is selected.
+// It retrieves the movement data for the selected piece and calculates all valid move destinations based on the piece's movement properties.
+// It then shows the valid move tiles on the grid by calling ShowValidMove(true) on each valid tile.
+void AGridGameGameMode::PieceSelected(AGamePiece* Piece)
+{
+	FPieceMovementData MovementData = Piece->GetMovementData();
+	ValidMoveDestinations.Empty();
+
+	for (FPieceMovementProperties& Move : MovementData.FullMoveList)
+	{
+		switch (Move.MoveType)
+		{
+		default:
+			break;
+
+		case EMovementTypes::Step:
+			StepMove(Piece, Move);
+			break;
+
+		case EMovementTypes::LimitedRange:
+			RangeMove(Piece, Move, Move.RangeLimit);
+			break;
+
+		case EMovementTypes::BoundlessRange:
+			RangeMove(Piece, Move);
+			break;
+
+		case EMovementTypes::Other:
+			OtherMove(Piece, Move);
+			break;
+		}
+	}
+
+	for (const FVector& TileCoordinate : ValidMoveDestinations)
+	{
+		if (GridMap.Contains(TileCoordinate))
+		{
+			GridMap.FindRef(TileCoordinate)->ShowValidMove(true);
+		}
+	}
 }
 
 // Step Moves are moves with a single target tile
@@ -246,11 +293,6 @@ void AGridGameGameMode::RangeMove(AGamePiece* Piece, const FPieceMovementPropert
 	}
 }
 
-// This function is a placeholder for other types of moves that may be implemented in derived classes - usually for special moves like castling or en passant in chess.
-void AGridGameGameMode::OtherMove(AGamePiece* Piece, const FPieceMovementProperties& Move)
-{
-}
-
 // This function attempts to move a game piece to a target tile, checking if the move is valid based on the valid move destinations and outcomes.
 // If the target tile is not in the valid move destinations or outcomes, it logs an error and returns without moving the piece.
 // If the move is valid, it retrieves the move outcome and moves the piece(s) accordingly, capturing any pieces that are part of the outcome, before deselecting the piece and logging the completed move.
@@ -291,48 +333,6 @@ void AGridGameGameMode::TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile)
 	PieceDeselected();
 }
 
-// This function is called when a game piece is selected.
-// It retrieves the movement data for the selected piece and calculates all valid move destinations based on the piece's movement properties.
-// It then shows the valid move tiles on the grid by calling ShowValidMove(true) on each valid tile.
-void AGridGameGameMode::PieceSelected(AGamePiece* Piece)
-{
-	FPieceMovementData MovementData = Piece->GetMovementData();
-	ValidMoveDestinations.Empty();
-
-	for (FPieceMovementProperties& Move : MovementData.FullMoveList)
-	{
-		switch (Move.MoveType)
-		{
-		default:
-			break;
-
-		case EMovementTypes::Step:
-			StepMove(Piece, Move);
-			break;
-
-		case EMovementTypes::LimitedRange:
-			RangeMove(Piece, Move, Move.RangeLimit);
-			break;
-
-		case EMovementTypes::BoundlessRange:
-			RangeMove(Piece, Move);
-			break;
-
-		case EMovementTypes::Other:
-			OtherMove(Piece, Move);
-			break;
-		}
-	}
-
-	for (const FVector& TileCoordinate : ValidMoveDestinations)
-	{
-		if (GridMap.Contains(TileCoordinate))
-		{
-			GridMap.FindRef(TileCoordinate)->ShowValidMove(true);
-		}
-	}
-}
-
 // This function is called when a game piece is deselected.
 // It hides all valid move tiles for that game piece by calling ShowValidMove(false) on each valid tile and clears the list of valid move destinations.
 void AGridGameGameMode::PieceDeselected()
@@ -347,9 +347,4 @@ void AGridGameGameMode::PieceDeselected()
 
 	ValidMoveDestinations.Empty();
 }
-
-// This function is a placeholder for derived classes to implement specific promotion logic, such as providing a choice of piece to promote to.
-void AGridGameGameMode::OnTriggerPromotion(AGamePiece* Piece)
-{
-	UE_LOG(LogTemp, Warning, TEXT("OnTriggerPromotion called for Piece: %s"), *Piece->GetPieceName().ToString());
-}
+#pragma endregion
