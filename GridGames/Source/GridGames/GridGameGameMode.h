@@ -49,7 +49,6 @@ private:
 	void GameStart();
 	void PreTurn();
 	void MainTurn();
-	void PostTurn();
 
 protected:
 	GridGameTracker GameTracker{};
@@ -63,6 +62,8 @@ protected:
 	void RangeMove(AGamePiece* Piece, const FPieceMovementProperties& Move, const int& RangeLimit = -99);
 	// This function is for other types of moves that may be implemented in derived classes - usually for special moves like castling or en passant in chess.
 	virtual void OtherMove(AGamePiece* Piece, const FPieceMovementProperties& Move) PURE_VIRTUAL(AGridGameGameMode::OtherMove,);
+
+	void PostTurn();
 
 public:
 	void TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile);
