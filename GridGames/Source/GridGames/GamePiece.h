@@ -45,7 +45,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	
-	//TODO: Send via Pointer / Refernce instead?
+	//TODO: Send via Pointer / Reference instead?
 	FVector GetCurrentCoordinate() const { return CurrentCoordinate; };
 	TArray<FVector> GetPastCoordinates() const { return PastCoordinates; };
 	FPieceSetupProperties GetSetupProperties() const { return SetupProperties; };

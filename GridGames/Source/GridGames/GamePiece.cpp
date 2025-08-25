@@ -8,6 +8,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "GridGameGameMode.h"
 
+
 // Sets default values
 AGamePiece::AGamePiece()
 {
@@ -88,7 +89,15 @@ void AGamePiece::Move(const AGridTile* TargetTile, const float& TileSize)
 
 	NumMovesMade++;
 
-	if(CanPromote()) TriggerPromotion();
+	if (CanPromote())
+	{
+		TriggerPromotion();
+	}
+	else
+	{
+		AGridGameGameMode* GameMode = Cast<AGridGameGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+		GameMode->GoToPostTurn();
+	}
 }
 
 void AGamePiece::PieceCaptured()

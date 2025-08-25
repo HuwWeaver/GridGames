@@ -64,5 +64,7 @@ public:
 	void DeselectInput();
 
 	UFUNCTION()
+	void OnTurnStart();
+	UFUNCTION()
 	void OnPieceMoved();
 };

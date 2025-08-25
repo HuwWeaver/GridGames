@@ -27,7 +27,7 @@ void AGridGamePlayerController::BeginPlay()
 	}
 
 	GameMode = Cast<AGridGameGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
-	GameMode->PieceMoved.AddDynamic(this, &AGridGamePlayerController::SwitchPlayer);
+	GameMode->TurnStart.AddDynamic(this, &AGridGamePlayerController::SwitchPlayer);
 
 	GameCamera = GetWorld()->SpawnActor<AGridGameCameraActor>();
 	GameCamera->SwitchPlayer(bIsWhite, WhitePlayerPawn->GetActorLocation(), WhitePlayerPawn->GetActorRotation());

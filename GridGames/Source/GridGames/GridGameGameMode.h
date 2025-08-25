@@ -8,6 +8,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "GridGameGameMode.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTurnStart);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPieceMoved);
 
 UCLASS()
@@ -45,12 +46,18 @@ private:
 	void CreateGrid();
 	void PopulateBoard();
 
+	void GameStart();
+	void PreTurn();
+	void MainTurn();
+	void PostTurn();
+
 protected:
 	GridGameTracker GameTracker{};
 	TMap<FVector, AGridTile*> GridMap;
 	TArray<FVector> ValidMoveDestinations;
 	TMap<FVector, FMoveOutcome> ValidMoveOutcomes;
 	AGamePiece* LastMovedPiece{ nullptr };
+	ETurnPhase CurrentTurnPhase;
 
 	void StepMove(AGamePiece* Piece, const FPieceMovementProperties& Move);
 	void RangeMove(AGamePiece* Piece, const FPieceMovementProperties& Move, const int& RangeLimit = -99);
@@ -62,11 +69,15 @@ public:
 	void PieceSelected(AGamePiece* Piece);
 	void PieceDeselected();
 
+	void GoToPostTurn();
+
 	// This function is for derived classes to implement specific promotion logic, such as providing a choice of piece to promote to.
 	virtual void OnTriggerPromotion(AGamePiece* Piece) PURE_VIRTUAL(AGridGameGameMode::OnTriggerPromotion, );
 
 	AGamePiece* GetLastMovedPiece() const { return LastMovedPiece; }
 
+	UPROPERTY()
+	FTurnStart TurnStart;
 	UPROPERTY()
 	FPieceMoved PieceMoved;
 };

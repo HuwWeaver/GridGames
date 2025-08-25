@@ -82,11 +82,42 @@ void AGridGameGameMode::PopulateBoard()
 
 	//TODO: Remove LogTemp log, implement more robust method
 	UE_LOG(LogTemp, Display, TEXT("Board Populated!"));
+
+	GameStart();
+}
+
+void AGridGameGameMode::GameStart()
+{
+	//TODO: Remove LogTemp log, implement more robust method
+	UE_LOG(LogTemp, Display, TEXT("Game Start!"));
+
+	PreTurn();
+}
+#pragma endregion
+
+#pragma region PreTurn
+void AGridGameGameMode::PreTurn()
+{
+	CurrentTurnPhase = ETurnPhase::PreTurn;
+	TurnStart.Broadcast();
+	//TODO: Change Player/Camera
+	//TODO: Determine if in Check
+	//TODO: Find & Highlight Valid Pieces
+
+	MainTurn();
 }
 #pragma endregion
 
 // Functions to handle the main actions of a turn, such as Piece Selection, Valid Moved Calculation, Movement, and Piece Deselection.
 #pragma region Main Turn
+void AGridGameGameMode::MainTurn()
+{
+	CurrentTurnPhase = ETurnPhase::MainTurn;
+	//TODO: Enable Input
+
+	//Now wait for player input...
+}
+
 // This function is called when a game piece is selected.
 // It retrieves the movement data for the selected piece and calculates all valid move destinations based on the piece's movement properties.
 // It then shows the valid move tiles on the grid by calling ShowValidMove(true) on each valid tile.
@@ -127,6 +158,21 @@ void AGridGameGameMode::PieceSelected(AGamePiece* Piece)
 			GridMap.FindRef(TileCoordinate)->ShowValidMove(true);
 		}
 	}
+}
+
+// This function is called when a game piece is deselected.
+// It hides all valid move tiles for that game piece by calling ShowValidMove(false) on each valid tile and clears the list of valid move destinations.
+void AGridGameGameMode::PieceDeselected()
+{
+	for (const FVector& TileCoordinate : ValidMoveDestinations)
+	{
+		if (GridMap.Contains(TileCoordinate))
+		{
+			GridMap.FindRef(TileCoordinate)->ShowValidMove(false);
+		}
+	}
+
+	ValidMoveDestinations.Empty();
 }
 
 // Step Moves are moves with a single target tile
@@ -332,19 +378,20 @@ void AGridGameGameMode::TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile)
 
 	PieceDeselected();
 }
+#pragma endregion
 
-// This function is called when a game piece is deselected.
-// It hides all valid move tiles for that game piece by calling ShowValidMove(false) on each valid tile and clears the list of valid move destinations.
-void AGridGameGameMode::PieceDeselected()
+#pragma region PostTurn
+void AGridGameGameMode::GoToPostTurn()
 {
-	for (const FVector& TileCoordinate : ValidMoveDestinations)
-	{
-		if (GridMap.Contains(TileCoordinate))
-		{
-			GridMap.FindRef(TileCoordinate)->ShowValidMove(false);
-		}
-	}
+	PostTurn();
+}
 
-	ValidMoveDestinations.Empty();
+void AGridGameGameMode::PostTurn()
+{
+	CurrentTurnPhase = ETurnPhase::PostTurn;
+
+	//TODO: Disable Input
+
+	PreTurn();
 }
 #pragma endregion

@@ -23,6 +23,7 @@ void AGridGamePawn::BeginPlay()
 	Super::BeginPlay();
 
 	GameMode = Cast<AGridGameGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	GameMode->TurnStart.AddDynamic(this, &AGridGamePawn::OnTurnStart);
 	GameMode->PieceMoved.AddDynamic(this, &AGridGamePawn::OnPieceMoved);
 }
 
@@ -109,6 +110,12 @@ void AGridGamePawn::DeselectInput()
 	bGamePieceSelected = false;
 	SelectedPiece = nullptr;
 	GameMode->PieceDeselected();
+}
+
+void AGridGamePawn::OnTurnStart()
+{
+	bGamePieceSelected = false;
+	SelectedPiece = nullptr;
 }
 
 void AGridGamePawn::OnPieceMoved()
