@@ -10,6 +10,14 @@
 
 class AGamePiece;
 
+UENUM(BlueprintType)
+enum class ETurnPhase : uint8
+{
+	PreTurn UMETA(DisplayName = "PreTurn"),
+	MainTurn UMETA(DisplayName = "MainTurn"),
+	PostTurn UMETA(DisplayName = "PostTurn")
+};
+
 
 USTRUCT(BlueprintType)
 struct GRIDGAMES_API FPieceSetupProperties : public FTableRowBase

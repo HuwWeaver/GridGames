@@ -9,23 +9,15 @@
 #include "GameFramework/Pawn.h"
 #include "GridGamePawn.generated.h"
 
-class USceneComponent;
-class UCameraComponent;
 class UInputComponent;
 class UInputAction;
 class UInputMappingContext;
 struct FInputActionValue;
 
-
 UCLASS()
 class GRIDGAMES_API AGridGamePawn : public APawn
 {
 	GENERATED_BODY()
-
-	USceneComponent* Root;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* CameraComponent;
 
 	/* MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -49,6 +41,9 @@ public:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bIsWhite{ true };
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -68,6 +63,8 @@ public:
 	void SelectInput();
 	void DeselectInput();
 
+	UFUNCTION()
+	void OnTurnStart();
 	UFUNCTION()
 	void OnPieceMoved();
 };

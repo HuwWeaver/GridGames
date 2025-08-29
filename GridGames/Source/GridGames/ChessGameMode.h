@@ -23,6 +23,7 @@ private:
 	void PromotePiece(AGamePiece* Piece, const FName& NewPieceName);
 
 public:
+	//No C++ Function Definition, only Blueprint Implementable Event
 	UFUNCTION(BlueprintImplementableEvent)
 	void ProvidePromotionChoice(AGamePiece* Piece);
 };

@@ -235,4 +235,7 @@ void AChessGameMode::PromotePiece(AGamePiece* Piece, const FName& NewPieceName)
 	FPieceMovementData* NewMoveData = PiecesMovementData->FindRow<FPieceMovementData>(NewPieceName, "");
 
 	Piece->Promote(NewPieceName, *NewMoveData);
+	GameTracker.LogPromotion(NewPieceName);
+
+	PostTurn();
 }
