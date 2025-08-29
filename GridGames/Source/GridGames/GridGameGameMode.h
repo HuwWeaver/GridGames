@@ -77,8 +77,6 @@ public:
 	// This function is for derived classes to implement specific promotion logic, such as providing a choice of piece to promote to.
 	virtual void OnTriggerPromotion(AGamePiece* Piece) PURE_VIRTUAL(AGridGameGameMode::OnTriggerPromotion, );
 
-	AGamePiece* GetLastMovedPiece() const { return LastMovedPiece; }
-
 	UPROPERTY()
 	FTurnStart TurnStart;
 	UPROPERTY()
