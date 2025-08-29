@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GridGameGlobals.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(LogChessGameLog, Display, All);
+
 class GRIDGAMES_API GridGameTracker
 {
 public:

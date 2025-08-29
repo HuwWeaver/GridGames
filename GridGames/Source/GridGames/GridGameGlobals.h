@@ -7,6 +7,9 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GridGameGlobals.generated.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(LogGridGameError, Error, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogGridGameFatal, Fatal, All);
+
 class AGamePiece;
 
 UENUM(BlueprintType)

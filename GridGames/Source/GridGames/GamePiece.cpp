@@ -93,11 +93,6 @@ void AGamePiece::Move(const AGridTile* TargetTile, const float& TileSize)
 	{
 		TriggerPromotion();
 	}
-	else
-	{
-		AGridGameGameMode* GameMode = Cast<AGridGameGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
-		GameMode->GoToPostTurn();
-	}
 }
 
 void AGamePiece::PieceCaptured()

@@ -3,3 +3,5 @@
 
 #include "GridGameGlobals.h"
 
+DEFINE_LOG_CATEGORY(LogGridGameError);
+DEFINE_LOG_CATEGORY(LogGridGameFatal);

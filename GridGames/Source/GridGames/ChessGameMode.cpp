@@ -50,8 +50,7 @@ void AChessGameMode::OtherMove(AGamePiece* Piece, const FPieceMovementProperties
 				AGamePiece* OccupyingPiece = TargetTile.GetOccupyingPiece();
 				if (OccupyingPiece == nullptr)
 				{
-					//TODO: Remove LogTemp log, implement more robust method
-					UE_LOG(LogTemp, Fatal, TEXT("OccupyingPiece is nullptr"));
+					UE_LOG(LogGridGameError, Error, TEXT("OccupyingPiece is nullptr"));
 					return;
 				}
 
@@ -92,8 +91,7 @@ void AChessGameMode::OtherMove(AGamePiece* Piece, const FPieceMovementProperties
 				AGamePiece* OccupyingPiece = AdjacentTile.GetOccupyingPiece();
 				if (OccupyingPiece == nullptr)
 				{
-					//TODO: Remove LogTemp log, implement more robust method
-					UE_LOG(LogTemp, Fatal, TEXT("OccupyingPiece is nullptr"));
+					UE_LOG(LogGridGameError, Error, TEXT("OccupyingPiece is nullptr"));
 					return;
 				}
 
@@ -222,14 +220,12 @@ void AChessGameMode::PromotePiece(AGamePiece* Piece, const FName& NewPieceName)
 {
 	if (Piece == nullptr)
 	{
-		//TODO: Remove LogTemp log, implement more robust method
-		UE_LOG(LogTemp, Error, TEXT("PromotePiece called with nullptr Piece"));
+		UE_LOG(LogGridGameError, Error, TEXT("PromotePiece called with nullptr Piece"));
 		return;
 	}
 	if (NewPieceName == "")
 	{
-		//TODO: Remove LogTemp log, implement more robust method
-		UE_LOG(LogTemp, Error, TEXT("PromotePiece called with empty NewPieceName"));
+		UE_LOG(LogGridGameError, Error, TEXT("PromotePiece called with empty NewPieceName"));
 		return;
 	}
 
