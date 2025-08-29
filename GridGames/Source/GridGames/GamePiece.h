@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GridTile.h"
 #include "GridGameData.h"
 #include "GameFramework/Actor.h"
 #include "GamePiece.generated.h"
@@ -11,6 +10,8 @@
 class USceneComponent;
 class UStaticMeshComponent;
 class UTextRenderComponent;
+
+class AGridTile;
 
 UCLASS()
 class GRIDGAMES_API AGamePiece : public AActor

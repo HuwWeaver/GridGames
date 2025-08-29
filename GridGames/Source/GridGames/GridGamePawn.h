@@ -3,9 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GamePiece.h"
-#include "GridTile.h"
-#include "GridGameGameMode.h"
 #include "GameFramework/Pawn.h"
 #include "GridGamePawn.generated.h"
 
@@ -13,6 +10,10 @@ class UInputComponent;
 class UInputAction;
 class UInputMappingContext;
 struct FInputActionValue;
+
+class AGamePiece;
+class AGridTile;
+class AGridGameGameMode;
 
 UCLASS()
 class GRIDGAMES_API AGridGamePawn : public APawn

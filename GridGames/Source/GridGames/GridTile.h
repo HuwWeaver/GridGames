@@ -10,6 +10,7 @@ class USceneComponent;
 class UStaticMeshComponent;
 class UTextRenderComponent;
 class UBoxComponent;
+
 class AGamePiece;
 
 UCLASS()

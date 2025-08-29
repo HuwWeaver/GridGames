@@ -3,14 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GridGameGameMode.h"
 #include "GameFramework/PlayerController.h"
-#include "GridGameCameraActor.h"
 #include "GridGamePlayerController.generated.h"
 
-/**
- * 
- */
+class AGridGameGameMode;
+class AGridGameCameraActor;
+
 UCLASS()
 class GRIDGAMES_API AGridGamePlayerController : public APlayerController
 {

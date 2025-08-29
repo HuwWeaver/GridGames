@@ -6,9 +6,6 @@
 #include "GridGameGameMode.h"
 #include "ChessGameMode.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class GRIDGAMES_API AChessGameMode : public AGridGameGameMode
 {

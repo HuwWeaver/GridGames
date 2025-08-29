@@ -6,9 +6,6 @@
 #include "Camera/CameraActor.h"
 #include "GridGameCameraActor.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class GRIDGAMES_API AGridGameCameraActor : public ACameraActor
 {

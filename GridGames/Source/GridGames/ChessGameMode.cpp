@@ -1,7 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "ChessGameMode.h"
+#include "GridTile.h"
+#include "GamePiece.h"
 #include "Kismet/KismetMathLibrary.h"
 
 void AChessGameMode::OtherMove(AGamePiece* Piece, const FPieceMovementProperties& Move)

@@ -7,7 +7,7 @@
 #include "Components/TextRenderComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GridGameGameMode.h"
-
+#include "GridTile.h"
 
 // Sets default values
 AGamePiece::AGamePiece()

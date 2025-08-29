@@ -2,6 +2,8 @@
 
 #include "GridGameGameMode.h"
 #include "GridGameData.h"
+#include "GamePiece.h"
+#include "GridTile.h"
 
 #include "Kismet/KismetStringLibrary.h"
 #include "Kismet/BlueprintMapLibrary.h"
