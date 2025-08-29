@@ -233,6 +233,4 @@ void AChessGameMode::PromotePiece(AGamePiece* Piece, const FName& NewPieceName)
 
 	Piece->Promote(NewPieceName, *NewMoveData);
 	GameTracker.LogPromotion(NewPieceName);
-
-	PostTurn();
 }

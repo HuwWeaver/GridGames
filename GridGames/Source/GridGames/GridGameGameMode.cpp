@@ -360,6 +360,8 @@ void AGridGameGameMode::TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile)
 	GameTracker.LogCompletedMove(MoveOutcome);
 
 	PieceDeselected();
+
+	PostTurn();
 }
 #pragma endregion
 
