@@ -4,6 +4,8 @@
 #include "GridGameTracker.h"
 #include "GamePiece.h"
 
+DEFINE_LOG_CATEGORY(LogChessGameLog);
+
 GridGameTracker::GridGameTracker()
 {
 }
@@ -52,11 +54,10 @@ void GridGameTracker::LogCompletedMove(const FMoveOutcome& MoveOutcome)
 
 	bWhiteTurn = !bWhiteTurn;
 
-	//TODO: Remove LogTemp log, implement more robust method
-	UE_LOG(LogTemp, Display, TEXT("MoveLog: %s"), *MoveLog);
-	UE_LOG(LogTemp, Display, TEXT("GameLog: %s"), *GameLog);
-	UE_LOG(LogTemp, Display, TEXT("DisambiguatedMoveLog: %s"), *DisambiguatedMoveLog);
-	UE_LOG(LogTemp, Display, TEXT("DisambiguatedGameLog: %s"), *DisambiguatedGameLog);
+	UE_LOG(LogChessGameLog, Display, TEXT("MoveLog: %s"), *MoveLog);
+	UE_LOG(LogChessGameLog, Display, TEXT("GameLog: %s"), *GameLog);
+	UE_LOG(LogChessGameLog, Display, TEXT("DisambiguatedMoveLog: %s"), *DisambiguatedMoveLog);
+	UE_LOG(LogChessGameLog, Display, TEXT("DisambiguatedGameLog: %s"), *DisambiguatedGameLog);
 }
 
 char GridGameTracker::NthLetter(int n)
@@ -91,8 +92,7 @@ char GridGameTracker::PieceInitial(FString PieceName)
 		return '\0';
 	}
 
-	//TODO: Remove LogTemp log, implement more robust method
-	UE_LOG(LogTemp, Error, TEXT("Piece Name not Found"));
+	UE_LOG(LogGridGameError, Error, TEXT("Piece Name not Found"));
 	return 0;
 }
 
@@ -108,7 +108,6 @@ void GridGameTracker::LogPromotion(const FName& PromotedPieceName)
 	GameLog.Append(FString::Printf(TEXT("%s "), *PromotedPieceInitial));
 	DisambiguatedGameLog.Append(FString::Printf(TEXT("%s "), *PromotedPieceInitial));
 
-	//TODO: Remove LogTemp log, implement more robust method
-	UE_LOG(LogTemp, Display, TEXT("GameLog: %s"), *GameLog);
-	UE_LOG(LogTemp, Display, TEXT("DisambiguatedGameLog: %s"), *DisambiguatedGameLog);
+	UE_LOG(LogChessGameLog, Display, TEXT("GameLog: %s"), *GameLog);
+	UE_LOG(LogChessGameLog, Display, TEXT("DisambiguatedGameLog: %s"), *DisambiguatedGameLog);
 }

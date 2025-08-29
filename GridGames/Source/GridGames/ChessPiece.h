@@ -6,9 +6,6 @@
 #include "GamePiece.h"
 #include "ChessPiece.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class GRIDGAMES_API AChessPiece : public AGamePiece
 {

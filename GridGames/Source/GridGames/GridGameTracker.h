@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GridGameData.h"
+#include "GridGameGlobals.h"
+
+DECLARE_LOG_CATEGORY_EXTERN(LogChessGameLog, Display, All);
 
 class GRIDGAMES_API GridGameTracker
 {

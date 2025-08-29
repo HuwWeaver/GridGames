@@ -1,7 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "GridGameGameMode.h"
-#include "GridGameData.h"
+#include "GridGameGlobals.h"
+#include "GamePiece.h"
+#include "GridTile.h"
 
 #include "Kismet/KismetStringLibrary.h"
 #include "Kismet/BlueprintMapLibrary.h"
@@ -20,9 +22,6 @@ void AGridGameGameMode::BeginPlay()
 // Creates the grid of tiles using specified AGridTile class and specified grid dimensions.
 void AGridGameGameMode::CreateGrid()
 {
-	//TODO: Remove LogTemp log, implement more robust method
-	UE_LOG(LogTemp, Display, TEXT("Creating Grid..."));
-
 	for (size_t Column = 0; Column < GridColumns; Column++){
 		for (size_t Row = 0; Row < GridRows; Row++) {
 			for (size_t Layer = 0; Layer < GridLayers; Layer++) {
@@ -38,8 +37,6 @@ void AGridGameGameMode::CreateGrid()
 		}
 	}
 
-	//TODO: Remove LogTemp log, implement more robust method
-	UE_LOG(LogTemp, Display, TEXT("Grid Created!"));
 	PopulateBoard();
 }
 
@@ -48,11 +45,7 @@ void AGridGameGameMode::CreateGrid()
 // The MovementData DataTable contains the movement properties for each piece, such as movement vectors and range limits.
 void AGridGameGameMode::PopulateBoard()
 {
-	//TODO: Remove LogTemp log, implement more robust method
-	UE_LOG(LogTemp, Display, TEXT("Populating Board..."));
-
-	//TODO: Remove LogTemp log, implement more robust method
-	if (!PiecesSetupData || !PiecesMovementData) UE_LOG(LogTemp, Fatal, TEXT("No Valid Setup or Movement Data"));
+	if (!PiecesSetupData || !PiecesMovementData) UE_LOG(LogGridGameFatal, Fatal, TEXT("No Valid Setup or Movement Data"));
 
 	TArray<FName> SetupDataRows = PiecesSetupData->GetRowNames();
 
@@ -80,17 +73,11 @@ void AGridGameGameMode::PopulateBoard()
 		Piece->Init(PieceName, *Row, *MoveData);
 	}
 
-	//TODO: Remove LogTemp log, implement more robust method
-	UE_LOG(LogTemp, Display, TEXT("Board Populated!"));
-
 	GameStart();
 }
 
 void AGridGameGameMode::GameStart()
 {
-	//TODO: Remove LogTemp log, implement more robust method
-	UE_LOG(LogTemp, Display, TEXT("Game Start!"));
-
 	PreTurn();
 }
 #pragma endregion
@@ -215,8 +202,7 @@ void AGridGameGameMode::StepMove(AGamePiece* Piece, const FPieceMovementProperti
 	AGamePiece* OccupyingPiece = TargetTile.GetOccupyingPiece();
 	if (OccupyingPiece == nullptr)
 	{
-		//TODO: Remove LogTemp log, implement more robust method
-		UE_LOG(LogTemp, Fatal, TEXT("OccupyingPiece is nullptr"));
+		UE_LOG(LogGridGameError, Error, TEXT("OccupyingPiece is nullptr"));
 		return;
 	}
 
@@ -305,8 +291,7 @@ void AGridGameGameMode::RangeMove(AGamePiece* Piece, const FPieceMovementPropert
 		AGamePiece* OccupyingPiece = TargetTile.GetOccupyingPiece();
 		if (OccupyingPiece == nullptr)
 		{
-			//TODO: Remove LogTemp log, implement more robust method
-			UE_LOG(LogTemp, Fatal, TEXT("OccupyingPiece is nullptr"));
+			UE_LOG(LogGridGameError, Error, TEXT("OccupyingPiece is nullptr"));
 			return;
 		}
 
@@ -346,15 +331,13 @@ void AGridGameGameMode::TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile)
 {
 	if (!ValidMoveDestinations.Contains(TargetTile->GetCoordinates()))
 	{
-		//TODO: Remove LogTemp log, implement more robust method
-		UE_LOG(LogTemp, Error, TEXT("Target Coordinate not contained in Valid Move Destinations"));
+		UE_LOG(LogGridGameError, Error, TEXT("Target Coordinate not contained in Valid Move Destinations"));
 		return;
 	}
 	
 	if (!ValidMoveOutcomes.Contains(TargetTile->GetCoordinates()))
 	{
-		//TODO: Remove LogTemp log, implement more robust method
-		UE_LOG(LogTemp, Error, TEXT("Target Coordinate not contained in Valid Move Outcomes"));
+		UE_LOG(LogGridGameError, Error, TEXT("Target Coordinate not contained in Valid Move Outcomes"));
 		return;
 	}
 
@@ -377,6 +360,8 @@ void AGridGameGameMode::TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile)
 	GameTracker.LogCompletedMove(MoveOutcome);
 
 	PieceDeselected();
+
+	PostTurn();
 }
 #pragma endregion
 

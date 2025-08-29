@@ -2,13 +2,15 @@
 
 
 #include "GridGamePawn.h"
-#include "GridGameGameMode.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Components/SceneComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "GridGameGameMode.h"
+#include "GamePiece.h"
+#include "GridTile.h"
 
 // Sets default values
 AGridGamePawn::AGridGamePawn()

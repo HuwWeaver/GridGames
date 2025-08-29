@@ -3,10 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-
 #include "Engine/DataTable.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "GridGameData.generated.h"
+#include "GridGameGlobals.generated.h"
+
+DECLARE_LOG_CATEGORY_EXTERN(LogGridGameError, Error, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogGridGameFatal, Fatal, All);
 
 class AGamePiece;
 
@@ -80,7 +82,7 @@ struct GRIDGAMES_API FMoveOutcome
 };
 
 UCLASS()
-class GRIDGAMES_API UGridGameData : public UBlueprintFunctionLibrary
+class GRIDGAMES_API UGridGameGlobals : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 };

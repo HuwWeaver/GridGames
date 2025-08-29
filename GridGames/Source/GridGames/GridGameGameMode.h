@@ -3,13 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GamePiece.h"
 #include "GridGameTracker.h"
 #include "GameFramework/GameModeBase.h"
 #include "GridGameGameMode.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTurnStart);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPieceMoved);
+
+class AGamePiece;
+class AGridTile;
 
 UCLASS()
 class GRIDGAMES_API AGridGameGameMode : public AGameModeBase
@@ -74,8 +76,6 @@ public:
 
 	// This function is for derived classes to implement specific promotion logic, such as providing a choice of piece to promote to.
 	virtual void OnTriggerPromotion(AGamePiece* Piece) PURE_VIRTUAL(AGridGameGameMode::OnTriggerPromotion, );
-
-	AGamePiece* GetLastMovedPiece() const { return LastMovedPiece; }
 
 	UPROPERTY()
 	FTurnStart TurnStart;
