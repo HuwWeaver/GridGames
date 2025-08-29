@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GridGameData.h"
+#include "GridGameGlobals.h"
 #include "GameFramework/Actor.h"
 #include "GamePiece.generated.h"
 

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GridGameData.h"
+#include "GridGameGlobals.h"
 
 class GRIDGAMES_API GridGameTracker
 {

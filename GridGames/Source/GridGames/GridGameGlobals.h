@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "GridGameData.generated.h"
+#include "GridGameGlobals.generated.h"
 
 class AGamePiece;
 
@@ -79,7 +79,7 @@ struct GRIDGAMES_API FMoveOutcome
 };
 
 UCLASS()
-class GRIDGAMES_API UGridGameData : public UBlueprintFunctionLibrary
+class GRIDGAMES_API UGridGameGlobals : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 };

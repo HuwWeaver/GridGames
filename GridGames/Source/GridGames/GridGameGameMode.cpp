@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "GridGameGameMode.h"
-#include "GridGameData.h"
+#include "GridGameGlobals.h"
 #include "GamePiece.h"
 #include "GridTile.h"
 
