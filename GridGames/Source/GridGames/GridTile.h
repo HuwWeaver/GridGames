@@ -39,10 +39,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	//TODO: Send via Pointer / Refernce instead?
 	bool GetOccupied() const { return bOccupied; }
-	FVector GetCoordinates() const { return Coordinates; };
-
+	const FVector& GetCoordinates() const { return Coordinates; };
 	AGamePiece* GetOccupyingPiece() const { return OccupyingPiece; }
 
 	void Init(const FVector& InCoordinates);

@@ -46,12 +46,11 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	
-	//TODO: Send via Pointer / Reference instead?
-	FVector GetCurrentCoordinate() const { return CurrentCoordinate; };
-	TArray<FVector> GetPastCoordinates() const { return PastCoordinates; };
-	FPieceSetupProperties GetSetupProperties() const { return SetupProperties; };
-	FPieceMovementData GetMovementData() const { return MovementData; };
-	FName GetPieceName() const { return PieceName; };
+	const FVector& GetCurrentCoordinate() const { return CurrentCoordinate; };
+	const TArray<FVector>& GetPastCoordinates() const { return PastCoordinates; };
+	const FPieceSetupProperties& GetSetupProperties() const { return SetupProperties; };
+	const FPieceMovementData& GetMovementData() const { return MovementData; };
+	const FName& GetPieceName() const { return PieceName; };
 	int GetNumMovesMade() const { return NumMovesMade; };
 
 	void Init(const FName& Name, const FPieceSetupProperties& SetupData, const FPieceMovementData& MoveData);
