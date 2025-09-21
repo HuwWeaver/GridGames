@@ -13,14 +13,4 @@ class GRIDGAMES_API AChessGameMode : public AGridGameGameMode
 	
 private:
 	virtual void OtherMove(AGamePiece* Piece, const FPieceMovementProperties& Move) override;
-
-	virtual void OnTriggerPromotion(AGamePiece* Piece) override;
-
-	UFUNCTION(BlueprintCallable)
-	void PromotePiece(AGamePiece* Piece, const FName& NewPieceName);
-
-public:
-	//No C++ Function Definition, only Blueprint Implementable Event
-	UFUNCTION(BlueprintImplementableEvent)
-	void ProvidePromotionChoice(AGamePiece* Piece);
 };

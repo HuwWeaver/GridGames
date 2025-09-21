@@ -35,16 +35,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Grid")
 	TSubclassOf<AGridTile> GridTileClass;
 
-
-	//TODO: Remove
-	UPROPERTY(EditDefaultsOnly, Category = "Pieces")
-	TSubclassOf<AGamePiece> GamePieceClass;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Pieces")
 	UDataTable* PiecesSetupData;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Pieces")
-	UDataTable* PiecesMovementData;
 
 private:
 	void CreateGrid();
@@ -65,7 +57,7 @@ protected:
 	void StepMove(AGamePiece* Piece, const FPieceMovementProperties& Move);
 	void RangeMove(AGamePiece* Piece, const FPieceMovementProperties& Move, const int& RangeLimit = -99);
 	// This function is for other types of moves that may be implemented in derived classes - usually for special moves like castling or en passant in chess.
-	virtual void OtherMove(AGamePiece* Piece, const FPieceMovementProperties& Move) PURE_VIRTUAL(AGridGameGameMode::OtherMove,);
+	virtual void OtherMove(AGamePiece* Piece, const FPieceMovementProperties& Move) PURE_VIRTUAL(AGridGameGameMode::OtherMove);
 
 	void PostTurn();
 
@@ -75,9 +67,6 @@ public:
 	void PieceDeselected();
 
 	void GoToPostTurn();
-
-	// This function is for derived classes to implement specific promotion logic, such as providing a choice of piece to promote to.
-	virtual void OnTriggerPromotion(AGamePiece* Piece) PURE_VIRTUAL(AGridGameGameMode::OnTriggerPromotion, );
 
 	UPROPERTY()
 	FTurnStart TurnStart;

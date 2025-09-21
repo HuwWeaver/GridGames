@@ -6,12 +6,11 @@
 #include "ChessPiece.h"
 #include "ChessPawn.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class GRIDGAMES_API AChessPawn : public AChessPiece
 {
 	GENERATED_BODY()
-	
+
+private:
+	virtual void CheckPromotion() override;
 };

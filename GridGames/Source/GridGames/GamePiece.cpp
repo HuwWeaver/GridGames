@@ -27,30 +27,16 @@ void AGamePiece::BeginPlay()
 	Super::BeginPlay();
 }
 
-bool AGamePiece::CanPromote()
-{
-	return false;
-}
-
-void AGamePiece::TriggerPromotion()
-{
-	//Tell Gamemode to Start Promotion Process
-	AGridGameGameMode* GameMode = Cast<AGridGameGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
-	GameMode->OnTriggerPromotion(this);
-}
-
 // Called every frame
 void AGamePiece::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
-void AGamePiece::Init(const FPieceSetupProperties& SetupData, const FPieceMovementData& MoveData)
+void AGamePiece::Init(const FPieceSetupProperties& SetupData)
 {
 	SetupProperties = SetupData;
 	CurrentCoordinate = SetupProperties.StartingCoordinates;
-	MovementData = MoveData;
 
 	PieceMesh->SetCollisionObjectType(ECC_GameTraceChannel1);
 	PieceMesh->SetSimulatePhysics(true);
@@ -66,22 +52,19 @@ void AGamePiece::Move(const AGridTile* TargetTile, const float& TileSize)
 
 	NumMovesMade++;
 
-	//TODO: New Promototion Logic
-	if (CanPromote())
-	{
-		TriggerPromotion();
-	}
+	CheckPromotion();
+}
+
+void AGamePiece::CheckPromotion()
+{
+}
+
+void AGamePiece::Promote(const TSubclassOf<AGamePiece>& NewPiece)
+{
+	UE_LOG(LogTemp, Display, TEXT("Piece Promoted"));
 }
 
 void AGamePiece::PieceCaptured()
 {
 	Destroy();
-}
-
-void AGamePiece::Promote(const FName& NewPieceName, const FPieceMovementData& NewMoveData)
-{
-	PieceName = NewPieceName;
-	MovementData = NewMoveData;
-
-	//TODO: Update Piece Mesh
 }

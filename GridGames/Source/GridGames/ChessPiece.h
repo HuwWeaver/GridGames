@@ -12,9 +12,7 @@ class GRIDGAMES_API AChessPiece : public AGamePiece
 	GENERATED_BODY()
 
 private:
-	virtual bool CanPromote() override;
-
-	virtual void Init(const FPieceSetupProperties& SetupData, const FPieceMovementData& MoveData) override;
+	virtual void Init(const FPieceSetupProperties& SetupData) override;
 
 protected:
 	UPROPERTY(EditAnywhere)

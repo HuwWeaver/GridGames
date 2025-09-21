@@ -3,25 +3,9 @@
 
 #include "ChessPiece.h"
 
-bool AChessPiece::CanPromote()
+void AChessPiece::Init(const FPieceSetupProperties& SetupData)
 {
-	if (PieceName != "Pawn")
-	{
-		return false;
-	}
-
-	if (SetupProperties.StartingCoordinates.Y - CurrentCoordinate.Y == 6 ||
-		SetupProperties.StartingCoordinates.Y - CurrentCoordinate.Y == -6)
-	{
-		return true;
-	}
-
-	return false;
-}
-
-void AChessPiece::Init(const FPieceSetupProperties& SetupData, const FPieceMovementData& MoveData)
-{
-	Super::Init(SetupData, MoveData);
+	Super::Init(SetupData);
 	bIsWhite = SetupData.bWhite;
 
 	if (bIsWhite && WhiteMaterial)

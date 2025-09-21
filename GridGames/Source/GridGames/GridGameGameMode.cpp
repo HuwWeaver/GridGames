@@ -45,7 +45,7 @@ void AGridGameGameMode::CreateGrid()
 // The MovementData DataTable contains the movement properties for each piece, such as movement vectors and range limits.
 void AGridGameGameMode::PopulateBoard()
 {
-	if (!PiecesSetupData || !PiecesMovementData) UE_LOG(LogGridGameFatal, Fatal, TEXT("No Valid Setup or Movement Data"));
+	if (!PiecesSetupData) UE_LOG(LogGridGameFatal, Fatal, TEXT("No Valid Setup Data"));
 
 	TArray<FName> SetupDataRows = PiecesSetupData->GetRowNames();
 
@@ -60,9 +60,7 @@ void AGridGameGameMode::PopulateBoard()
 
 		AGamePiece* Piece = GetWorld()->SpawnActor<AGamePiece>(Row->PieceClass, Location, Rotation, SpawnInfo);
 
-		FPieceMovementData* MoveData = PiecesMovementData->FindRow<FPieceMovementData>(Piece->GetPieceName(), "");
-
-		Piece->Init(*Row, *MoveData);
+		Piece->Init(*Row);
 	}
 
 	GameStart();

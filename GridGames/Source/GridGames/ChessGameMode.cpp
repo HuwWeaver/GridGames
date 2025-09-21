@@ -210,27 +210,3 @@ void AChessGameMode::OtherMove(AGamePiece* Piece, const FPieceMovementProperties
 		}
 	}
 }
-
-void AChessGameMode::OnTriggerPromotion(AGamePiece* Piece)
-{
-	ProvidePromotionChoice(Piece);
-}
-
-void AChessGameMode::PromotePiece(AGamePiece* Piece, const FName& NewPieceName)
-{
-	if (Piece == nullptr)
-	{
-		UE_LOG(LogGridGameError, Error, TEXT("PromotePiece called with nullptr Piece"));
-		return;
-	}
-	if (NewPieceName == "")
-	{
-		UE_LOG(LogGridGameError, Error, TEXT("PromotePiece called with empty NewPieceName"));
-		return;
-	}
-
-	FPieceMovementData* NewMoveData = PiecesMovementData->FindRow<FPieceMovementData>(NewPieceName, "");
-
-	Piece->Promote(NewPieceName, *NewMoveData);
-	GameTracker.LogPromotion(NewPieceName);
-}

@@ -38,20 +38,19 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	FPieceMovementData MovementData;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName PieceName{ "" };
 	UPROPERTY(EditAnywhere)
 	FName PieceNameAbbr{ "" };
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Promotion")
 	bool bPromotable{ false };
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Promotion")
 	TArray<TSubclassOf<AGamePiece>> PromotionOptions;
 
-	virtual bool CanPromote();
-	void TriggerPromotion();
+	virtual void CheckPromotion();
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	
@@ -62,8 +61,14 @@ public:
 	const FName& GetPieceName() const { return PieceName; };
 	int GetNumMovesMade() const { return NumMovesMade; };
 
-	virtual void Init(const FPieceSetupProperties& SetupData, const FPieceMovementData& MoveData);
+	virtual void Init(const FPieceSetupProperties& SetupData);
 	void Move(const AGridTile* TargetTile, const float& TileSize);
 	void PieceCaptured();
-	void Promote(const FName& NewPieceName, const FPieceMovementData& NewMoveData);
+
+	//No C++ Function Definition, only Blueprint Implementable Event
+	UFUNCTION(BlueprintImplementableEvent, Category = "Promotion")
+	void ProvidePromotionChoice(AGamePiece* Piece);
+
+	UFUNCTION(BlueprintCallable, Category = "Promotion")
+	void Promote(const TSubclassOf<AGamePiece>& NewPiece);
 };
