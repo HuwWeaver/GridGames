@@ -31,9 +31,7 @@ struct GRIDGAMES_API FPieceSetupProperties : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector StartingCoordinates{ 0,0,0 };
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UStaticMesh* PieceMesh{ nullptr };
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UMaterialInstance* Material{ nullptr };
+	TSubclassOf<AGamePiece> PieceClass{ nullptr };
 };
 
 UENUM(BlueprintType)

@@ -35,6 +35,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Grid")
 	TSubclassOf<AGridTile> GridTileClass;
 
+
+	//TODO: Remove
 	UPROPERTY(EditDefaultsOnly, Category = "Pieces")
 	TSubclassOf<AGamePiece> GamePieceClass;
 

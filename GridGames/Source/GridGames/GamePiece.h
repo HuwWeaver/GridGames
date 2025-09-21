@@ -25,9 +25,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* PieceMesh;
 
-	UPROPERTY(EditAnywhere)
-	UTextRenderComponent* NameDisplay;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -35,9 +32,21 @@ protected:
 	FVector CurrentCoordinate{0,0,0};
 	TArray<FVector> PastCoordinates;
 	int NumMovesMade{ 0 };
+
+	//TODO: Remove
 	FPieceSetupProperties SetupProperties;
+
+	UPROPERTY(EditAnywhere)
 	FPieceMovementData MovementData;
+	UPROPERTY(EditAnywhere)
 	FName PieceName{ "" };
+	UPROPERTY(EditAnywhere)
+	FName PieceNameAbbr{ "" };
+
+	UPROPERTY(EditAnywhere)
+	bool bPromotable{ false };
+	UPROPERTY(EditAnywhere)
+	TArray<TSubclassOf<AGamePiece>> PromotionOptions;
 
 	virtual bool CanPromote();
 	void TriggerPromotion();
@@ -53,7 +62,7 @@ public:
 	const FName& GetPieceName() const { return PieceName; };
 	int GetNumMovesMade() const { return NumMovesMade; };
 
-	void Init(const FName& Name, const FPieceSetupProperties& SetupData, const FPieceMovementData& MoveData);
+	virtual void Init(const FPieceSetupProperties& SetupData, const FPieceMovementData& MoveData);
 	void Move(const AGridTile* TargetTile, const float& TileSize);
 	void PieceCaptured();
 	void Promote(const FName& NewPieceName, const FPieceMovementData& NewMoveData);

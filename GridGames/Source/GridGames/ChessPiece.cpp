@@ -18,3 +18,18 @@ bool AChessPiece::CanPromote()
 
 	return false;
 }
+
+void AChessPiece::Init(const FPieceSetupProperties& SetupData, const FPieceMovementData& MoveData)
+{
+	Super::Init(SetupData, MoveData);
+	bIsWhite = SetupData.bWhite;
+
+	if (bIsWhite && WhiteMaterial)
+	{
+		PieceMesh->SetMaterial(0, WhiteMaterial);
+	}
+	else if (!bIsWhite && BlackMaterial)
+	{
+		PieceMesh->SetMaterial(0, BlackMaterial);
+	}
+}

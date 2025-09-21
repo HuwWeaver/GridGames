@@ -19,15 +19,6 @@ AGamePiece::AGamePiece()
 	RootComponent = PieceMesh;
 	PieceMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 50.0f));
 	PieceMesh->SetSimulatePhysics(false);
-
-	NameDisplay = CreateDefaultSubobject<UTextRenderComponent>(TEXT("PieceName"));
-	NameDisplay->SetupAttachment(PieceMesh);
-	NameDisplay->SetText(FText::FromString("Name"));
-	NameDisplay->SetHorizontalAlignment(EHTA_Center);
-	NameDisplay->SetVerticalAlignment(EVRTA_TextCenter);
-	NameDisplay->SetRelativeLocation(FVector(0.0f, 0.0f, 55.0f));
-	NameDisplay->SetRelativeRotation(FRotator(90.0f, 180.0f, 0.0f));
-
 }
 
 // Called when the game starts or when spawned
@@ -55,28 +46,14 @@ void AGamePiece::Tick(float DeltaTime)
 
 }
 
-void AGamePiece::Init(const FName& Name, const FPieceSetupProperties& SetupData, const FPieceMovementData& MoveData)
+void AGamePiece::Init(const FPieceSetupProperties& SetupData, const FPieceMovementData& MoveData)
 {
-	PieceName = Name;
-	NameDisplay->SetText(FText::FromName(PieceName));
 	SetupProperties = SetupData;
 	CurrentCoordinate = SetupProperties.StartingCoordinates;
 	MovementData = MoveData;
 
-	PieceMesh->SetStaticMesh(SetupProperties.PieceMesh);
 	PieceMesh->SetCollisionObjectType(ECC_GameTraceChannel1);
-	PieceMesh->SetMaterial(0, SetupProperties.Material);
 	PieceMesh->SetSimulatePhysics(true);
-
-	if (SetupProperties.bWhite)
-	{
-
-		NameDisplay->SetTextRenderColor(FColor(0, 0, 0));
-	}
-	else
-	{
-		NameDisplay->SetTextRenderColor(FColor(255, 255, 255));
-	}
 }
 
 void AGamePiece::Move(const AGridTile* TargetTile, const float& TileSize)
@@ -89,6 +66,7 @@ void AGamePiece::Move(const AGridTile* TargetTile, const float& TileSize)
 
 	NumMovesMade++;
 
+	//TODO: New Promototion Logic
 	if (CanPromote())
 	{
 		TriggerPromotion();
@@ -103,7 +81,6 @@ void AGamePiece::PieceCaptured()
 void AGamePiece::Promote(const FName& NewPieceName, const FPieceMovementData& NewMoveData)
 {
 	PieceName = NewPieceName;
-	NameDisplay->SetText(FText::FromName(PieceName));
 	MovementData = NewMoveData;
 
 	//TODO: Update Piece Mesh

@@ -58,19 +58,11 @@ void AGridGameGameMode::PopulateBoard()
 		FRotator Rotation = Row->bWhite ? FRotator(0,0,0) : FRotator(0,180,0);
 		FActorSpawnParameters SpawnInfo;
 
-		AGamePiece* Piece = GetWorld()->SpawnActor<AGamePiece>(GamePieceClass, Location, Rotation, SpawnInfo);
+		AGamePiece* Piece = GetWorld()->SpawnActor<AGamePiece>(Row->PieceClass, Location, Rotation, SpawnInfo);
 
-		FString StringName = RowName.ToString();
-		StringName = StringName.RightChop(5);
-		if (StringName.Right(1).IsNumeric())
-		{
-			StringName = StringName.LeftChop(1);
-		}
+		FPieceMovementData* MoveData = PiecesMovementData->FindRow<FPieceMovementData>(Piece->GetPieceName(), "");
 
-		FName PieceName = UKismetStringLibrary::Conv_StringToName(StringName);
-		FPieceMovementData* MoveData = PiecesMovementData->FindRow<FPieceMovementData>(PieceName, "");
-
-		Piece->Init(PieceName, *Row, *MoveData);
+		Piece->Init(*Row, *MoveData);
 	}
 
 	GameStart();
