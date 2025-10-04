@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ChessPiece.h"
+#include "GridGames/GamePieces/ChessPiece.h"
 #include "ChessPawn.generated.h"
 
 UCLASS()

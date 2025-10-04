@@ -5,7 +5,7 @@
 #include "GridGamePawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "GridGameCameraActor.h"
-#include "GridGameGameMode.h"
+#include "GridGames/GameModes/GridGameGameMode.h"
 
 void AGridGamePlayerController::BeginPlay()
 {

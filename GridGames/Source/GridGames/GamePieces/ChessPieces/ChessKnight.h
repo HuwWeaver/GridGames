@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ChessPiece.h"
-#include "ChessBishop.generated.h"
+#include "GridGames/GamePieces/ChessPiece.h"
+#include "ChessKnight.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class GRIDGAMES_API AChessBishop : public AChessPiece
+class GRIDGAMES_API AChessKnight : public AChessPiece
 {
 	GENERATED_BODY()
 	

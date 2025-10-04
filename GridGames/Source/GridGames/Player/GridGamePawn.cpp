@@ -8,9 +8,9 @@
 #include "Components/SceneComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "GridGameGameMode.h"
-#include "GamePiece.h"
-#include "GridTile.h"
+#include "GridGames/GameModes/GridGameGameMode.h"
+#include "GridGames/GamePieces/GamePiece.h"
+#include "GridGames/GameBoard/GridTile.h"
 
 // Sets default values
 AGridGamePawn::AGridGamePawn()

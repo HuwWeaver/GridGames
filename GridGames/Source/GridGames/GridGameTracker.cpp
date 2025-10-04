@@ -2,7 +2,7 @@
 
 
 #include "GridGameTracker.h"
-#include "GamePiece.h"
+#include "GridGames/GamePieces/GamePiece.h"
 
 DEFINE_LOG_CATEGORY(LogChessGameLog);
 
