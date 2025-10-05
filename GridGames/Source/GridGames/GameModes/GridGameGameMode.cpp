@@ -3,7 +3,7 @@
 #include "GridGameGameMode.h"
 #include "GridGameGlobals.h"
 #include "GridGames/GamePieces/GamePiece.h"
-#include "GridGames/GameBoard//GridTile.h"
+#include "GridGames/GameBoard/GridTile.h"
 
 #include "Kismet/KismetStringLibrary.h"
 #include "Kismet/BlueprintMapLibrary.h"
@@ -16,54 +16,10 @@ void AGridGameGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CreateGrid();
-}
+	GameBoard = Cast<AGameBoard>(UGameplayStatics::GetActorOfClass(GetWorld(), AGameBoard::StaticClass()));
+	GameBoard->BoardPopulated.AddDynamic(this, &AGridGameGameMode::GameStart);
 
-// Creates the grid of tiles using specified AGridTile class and specified grid dimensions.
-void AGridGameGameMode::CreateGrid()
-{
-	for (size_t Column = 0; Column < GridColumns; Column++){
-		for (size_t Row = 0; Row < GridRows; Row++) {
-			for (size_t Layer = 0; Layer < GridLayers; Layer++) {
-
-				FVector Location = FVector(Row * TileSize, Column * TileSize, Layer * 500.0f);
-				FRotator Rotation(0, 0, 0);
-				FActorSpawnParameters SpawnInfo;
-
-				AGridTile* Tile = GetWorld()->SpawnActor<AGridTile>(GridTileClass, Location, Rotation, SpawnInfo);
-				Tile->Init(FVector(Column, Row, Layer));
-				GridMap.Add(FVector(Column, Row, Layer), Tile);
-			}
-		}
-	}
-
-	PopulateBoard();
-}
-
-// Populates the grid using the specified SetupData and MovementData DataTables with the specified GamePiece class.
-// The SetupData DataTable contains the initial setup properties for each piece, such as starting coordinates and team color.
-// The MovementData DataTable contains the movement properties for each piece, such as movement vectors and range limits.
-void AGridGameGameMode::PopulateBoard()
-{
-	if (!PiecesSetupData) UE_LOG(LogGridGameFatal, Fatal, TEXT("No Valid Setup Data"));
-
-	TArray<FName> SetupDataRows = PiecesSetupData->GetRowNames();
-
-	for (FName RowName : SetupDataRows)
-	{
-		FPieceSetupProperties* Row = PiecesSetupData->FindRow<FPieceSetupProperties>(RowName, "");
-
-		// X and Y are swapped for first vector as grid X axis doesn't follow world X axis, but rather follows world Y (and vice versa).
-		FVector Location = FVector(Row->StartingCoordinates.Y * TileSize, Row->StartingCoordinates.X * TileSize, 0.0) + FVector(TileSize / 2, TileSize / 2, 100);
-		FRotator Rotation = Row->bWhite ? FRotator(0,0,0) : FRotator(0,180,0);
-		FActorSpawnParameters SpawnInfo;
-
-		AGamePiece* Piece = GetWorld()->SpawnActor<AGamePiece>(Row->PieceClass, Location, Rotation, SpawnInfo);
-
-		Piece->Init(*Row);
-	}
-
-	GameStart();
+	GameBoard->CreateGrid(GridRows, GridColumns, GridLayers, PiecesSetupData);
 }
 
 void AGridGameGameMode::GameStart()
@@ -130,9 +86,9 @@ void AGridGameGameMode::PieceSelected(AGamePiece* Piece)
 
 	for (const FVector& TileCoordinate : ValidMoveDestinations)
 	{
-		if (GridMap.Contains(TileCoordinate))
+		if (GameBoard->GetGridMap().Contains(TileCoordinate))
 		{
-			GridMap.FindRef(TileCoordinate)->ShowValidMove(true);
+			GameBoard->GetGridMap().FindRef(TileCoordinate)->ShowValidMove(true);
 		}
 	}
 }
@@ -143,9 +99,9 @@ void AGridGameGameMode::PieceDeselected()
 {
 	for (const FVector& TileCoordinate : ValidMoveDestinations)
 	{
-		if (GridMap.Contains(TileCoordinate))
+		if (GameBoard->GetGridMap().Contains(TileCoordinate))
 		{
-			GridMap.FindRef(TileCoordinate)->ShowValidMove(false);
+			GameBoard->GetGridMap().FindRef(TileCoordinate)->ShowValidMove(false);
 		}
 	}
 
@@ -163,14 +119,14 @@ void AGridGameGameMode::StepMove(AGamePiece* Piece, const FPieceMovementProperti
 	FVector TargetCoordinate = Piece->GetCurrentCoordinate() + MovementVector;
 
 	// Check if the target coordinate is within the bounds of the grid.
-	if (!GridMap.Contains(TargetCoordinate))
+	if (!GameBoard->GetGridMap().Contains(TargetCoordinate))
 	{
 		//Target Tile is out of bounds = Invalid Move
 		return;
 	}
 
 	// Get the target tile from the grid map using the target coordinate.
-	AGridTile& TargetTile = *GridMap.FindRef(TargetCoordinate);
+	AGridTile& TargetTile = *GameBoard->GetGridMap().FindRef(TargetCoordinate);
 
 	// Check if the target tile is occupied by another piece.
 	if (!TargetTile.GetOccupied())
@@ -236,10 +192,10 @@ void AGridGameGameMode::RangeMove(AGamePiece* Piece, const FPieceMovementPropert
 	int RemainingRange = RangeLimit - 1;
 
 	// Check if the target coordinate is within the bounds of the grid.
-	while (GridMap.Contains(TargetCoordinate))
+	while (GameBoard->GetGridMap().Contains(TargetCoordinate))
 	{
 		// Get the target tile from the grid map using the target coordinate.
-		AGridTile& TargetTile = *GridMap.FindRef(TargetCoordinate);
+		AGridTile& TargetTile = *GameBoard->GetGridMap().FindRef(TargetCoordinate);
 
 		// Check if the target tile is occupied by another piece.
 		if (!TargetTile.GetOccupied())
@@ -337,7 +293,7 @@ void AGridGameGameMode::TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile)
 	{
 		AGamePiece* PieceToMove = MoveOutcome.MovedPieces[i];
 		FVector TargetCoordinate = MoveOutcome.TargetCoordinates[i];
-		PieceToMove->Move(GridMap.FindRef(TargetCoordinate), TileSize);
+		PieceToMove->Move(GameBoard->GetGridMap().FindRef(TargetCoordinate), 200);
 	}
 
 	for (AGamePiece* PieceToCapture : MoveOutcome.CapturedPieces)

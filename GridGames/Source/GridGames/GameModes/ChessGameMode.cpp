@@ -21,7 +21,7 @@ void AChessGameMode::OtherMove(AGamePiece* Piece, const FPieceMovementProperties
 
 				FVector IntemediaryCoordinate = Piece->GetCurrentCoordinate() + MovementVector;
 
-				AGridTile& IntemediaryTile = *GridMap.FindRef(IntemediaryCoordinate);
+				AGridTile& IntemediaryTile = *GameBoard->GetGridMap().FindRef(IntemediaryCoordinate);
 				if (!IntemediaryTile.GetOccupied())
 				{
 					//Intemediary Tile Free -> Continue to check Target tile
@@ -37,13 +37,13 @@ void AChessGameMode::OtherMove(AGamePiece* Piece, const FPieceMovementProperties
 
 			FVector TargetCoordinate = Piece->GetCurrentCoordinate() + MovementVector;
 			//Target Tile is out of bounds = Invalid Move
-			if (!GridMap.Contains(TargetCoordinate))
+			if (!GameBoard->GetGridMap().Contains(TargetCoordinate))
 			{
 
 				return;
 			}
 
-			AGridTile& TargetTile = *GridMap.FindRef(TargetCoordinate);
+			AGridTile& TargetTile = *GameBoard->GetGridMap().FindRef(TargetCoordinate);
 			//Target Tile Occupied -> Standard Capture possible?
 			if (TargetTile.GetOccupied())
 			{
@@ -74,13 +74,13 @@ void AChessGameMode::OtherMove(AGamePiece* Piece, const FPieceMovementProperties
 			{
 				FVector AdjacentCoordinate = Piece->GetCurrentCoordinate() + FVector(MovementVector.X, 0, 0);
 				//Adjacent Tile is out of bounds = Invalid Move
-				if (!GridMap.Contains(AdjacentCoordinate))
+				if (!GameBoard->GetGridMap().Contains(AdjacentCoordinate))
 				{
 					
 					return;
 				}
 
-				AGridTile& AdjacentTile = *GridMap.FindRef(AdjacentCoordinate);
+				AGridTile& AdjacentTile = *GameBoard->GetGridMap().FindRef(AdjacentCoordinate);
 				//Adjacent Tile is empty -> Invalid Move
 				if (!AdjacentTile.GetOccupied())
 				{
@@ -158,12 +158,12 @@ void AChessGameMode::OtherMove(AGamePiece* Piece, const FPieceMovementProperties
 				{
 					FVector TileCoordinate = Piece->GetCurrentCoordinate() + (NormalizedMovementVector * i);
 					//Target Tile is out of bounds = Invalid Move
-					if (!GridMap.Contains(TileCoordinate))
+					if (!GameBoard->GetGridMap().Contains(TileCoordinate))
 					{
 						return;
 					}
 
-					AGridTile& TargetTile = *GridMap.FindRef(TileCoordinate);
+					AGridTile& TargetTile = *GameBoard->GetGridMap().FindRef(TileCoordinate);
 
 					//Tile not occupied, Castling still possible -> continue to next tile
 					if (!TargetTile.GetOccupied())

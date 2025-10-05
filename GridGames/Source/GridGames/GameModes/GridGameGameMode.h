@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GridGameTracker.h"
 #include "GameFramework/GameModeBase.h"
+#include "GameBoard/GameBoard.h"
 #include "GridGameGameMode.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTurnStart);
@@ -29,30 +30,22 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Grid")
 	int GridLayers{ 1 };
 
-	UPROPERTY(EditDefaultsOnly, Category = "Grid")
-	float TileSize{ 200.0f };
-
-	UPROPERTY(EditDefaultsOnly, Category = "Grid")
-	TSubclassOf<AGridTile> GridTileClass;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Pieces")
 	UDataTable* PiecesSetupData;
 
 private:
-	void CreateGrid();
-	void PopulateBoard();
-
+	UFUNCTION()
 	void GameStart();
 	void PreTurn();
 	void MainTurn();
 
 protected:
 	GridGameTracker GameTracker{};
-	TMap<FVector, AGridTile*> GridMap;
 	TArray<FVector> ValidMoveDestinations;
 	TMap<FVector, FMoveOutcome> ValidMoveOutcomes;
 	AGamePiece* LastMovedPiece{ nullptr };
 	ETurnPhase CurrentTurnPhase;
+	AGameBoard* GameBoard{ nullptr };
 
 	void StepMove(AGamePiece* Piece, const FPieceMovementProperties& Move);
 	void RangeMove(AGamePiece* Piece, const FPieceMovementProperties& Move, const int& RangeLimit = -99);
