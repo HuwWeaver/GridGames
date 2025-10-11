@@ -10,7 +10,10 @@
 void AGridGamePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+}
 
+void AGridGamePlayerController::Init(AGameBoard* GameBoard, AGridGameGameMode* InGameMode)
+{
 	bShowMouseCursor = true;
 
 	TArray<AActor*> OutActors;
@@ -21,14 +24,34 @@ void AGridGamePlayerController::BeginPlay()
 		if (Cast<AGridGamePawn>(PlayerPawn)->bIsWhite)
 		{
 			WhitePlayerPawn = Cast<AGridGamePawn>(PlayerPawn);
+			if( WhitePlayerPawn == nullptr )
+			{
+				UE_LOG(LogGridGameError, Error, TEXT("WhitePlayerPawn is nullptr"));
+				return;
+			}
+
+			WhitePlayerPawn->Init(GameBoard, InGameMode);
 		}
 		else
 		{
 			BlackPlayerPawn = Cast<AGridGamePawn>(PlayerPawn);
+			if ( BlackPlayerPawn == nullptr )
+			{
+				UE_LOG(LogGridGameError, Error, TEXT("BlackPlayerPawn is nullptr"));
+				return;
+			}
+
+			BlackPlayerPawn->Init(GameBoard, InGameMode);
 		}
 	}
 
-	GameMode = Cast<AGridGameGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	GameMode = InGameMode;
+	if (GameMode == nullptr)
+	{
+		UE_LOG(LogGridGameError, Error, TEXT("GameMode is nullptr"));
+		return;
+	}
+
 	GameMode->TurnStart.AddDynamic(this, &AGridGamePlayerController::SwitchPlayer);
 
 	GameCamera = GetWorld()->SpawnActor<AGridGameCameraActor>();

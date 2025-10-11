@@ -12,6 +12,7 @@ class UInputMappingContext;
 struct FInputActionValue;
 
 class AGamePiece;
+class AGameBoard;
 class AGridTile;
 class AGridGameGameMode;
 
@@ -42,6 +43,18 @@ public:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION()
+	void Init(AGameBoard* InGameBoard, AGridGameGameMode* GameMode);
+
+	void MoveInput(const FInputActionValue& Value);
+	void SelectInput();
+	void DeselectInput();
+
+	void TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile);
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bIsWhite{ true };
 
@@ -53,19 +66,8 @@ protected:
 	AGamePiece* SelectedPiece{ nullptr };
 
 private:
+	UPROPERTY()
 	APlayerController* PlayerController{ nullptr };
-	AGridGameGameMode* GameMode{ nullptr };
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	void MoveInput(const FInputActionValue& Value);
-	void SelectInput();
-	void DeselectInput();
-
-	UFUNCTION()
-	void OnTurnStart();
-	UFUNCTION()
-	void OnPieceMoved();
+	UPROPERTY()
+	AGameBoard* GameBoard{ nullptr };
 };

@@ -8,6 +8,7 @@
 #include "GameBoard.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBoardPopulated);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPieceMoved);
 
 UCLASS()
 class GRIDGAMES_API AGameBoard : public AActor
@@ -34,10 +35,22 @@ public:
 	void CreateGrid(int rows, int columns, int layers, UDataTable* PieceData);
 
 	const TMap<FVector, AGridTile*>& GetGridMap() const { return GridMap; };
+	AGamePiece* GetLastMovedPiece() const { return LastMovedPiece; }
+	void SetLastMovedPiece(AGamePiece* Piece);
+	int GetGridColumns() const { return GridColumns; };
 
 	UPROPERTY()
 	FBoardPopulated BoardPopulated;
 
+	UPROPERTY()
+	FPieceMoved PieceMoved;
+
 private:
 	void PopulateBoard(UDataTable* PieceData);
+
+	int GridRows{};
+	int GridColumns{};
+	int GridLayers{};
+
+	AGamePiece* LastMovedPiece{ nullptr };
 };

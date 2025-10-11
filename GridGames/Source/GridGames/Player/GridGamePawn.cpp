@@ -24,9 +24,12 @@ void AGridGamePawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GameMode = Cast<AGridGameGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
-	GameMode->TurnStart.AddDynamic(this, &AGridGamePawn::OnTurnStart);
-	GameMode->PieceMoved.AddDynamic(this, &AGridGamePawn::OnPieceMoved);
+	GameBoard = Cast<AGameBoard>(UGameplayStatics::GetActorOfClass(GetWorld(), AGameBoard::StaticClass()));
+	if (GameBoard == nullptr)
+	{
+		UE_LOG(LogGridGameError, Error, TEXT("GameBoard is nullptr"));
+		return;
+	}
 }
 
 // Called every frame
@@ -70,6 +73,11 @@ void AGridGamePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 }
 
+void AGridGamePawn::Init(AGameBoard* InGameBoard, AGridGameGameMode* GameMode)
+{
+	GameBoard = InGameBoard;
+}
+
 void AGridGamePawn::MoveInput(const FInputActionValue& Value)
 {
 }
@@ -86,7 +94,7 @@ void AGridGamePawn::SelectInput()
 			AGridTile* HitTile = Cast<AGridTile>(HitResult.GetActor());
 			if (HitTile)
 			{
-				GameMode->TryMovePiece(SelectedPiece, HitTile);
+				TryMovePiece(SelectedPiece, HitTile);
 			}
         }
     }
@@ -100,28 +108,52 @@ void AGridGamePawn::SelectInput()
 				if (SelectedPiece->GetSetupProperties().bWhite == bIsWhite)
 				{
 					bGamePieceSelected = true;
-					GameMode->PieceSelected(SelectedPiece);
+					SelectedPiece->PieceSelected();
 				}
             }
         }
     }
 }
 
+// This function attempts to move a game piece to a target tile, checking if the move is valid based on the valid move destinations and outcomes.
+// If the target tile is not in the valid move destinations or outcomes, it logs an error and returns without moving the piece.
+// If the move is valid, it retrieves the move outcome and moves the piece(s) accordingly, capturing any pieces that are part of the outcome, before deselecting the piece and logging the completed move.
+void AGridGamePawn::TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile)
+{
+	if (!Piece->GetValidMoveDestinations().Contains(TargetTile->GetCoordinates()))
+	{
+		UE_LOG(LogGridGameError, Error, TEXT("Target Coordinate not contained in Valid Move Destinations"));
+		return;
+	}
+
+	if (!Piece->GetValidMoveOutcomes().Contains(TargetTile->GetCoordinates()))
+	{
+		UE_LOG(LogGridGameError, Error, TEXT("Target Coordinate not contained in Valid Move Outcomes"));
+		return;
+	}
+
+	FMoveOutcome MoveOutcome = Piece->GetValidMoveOutcomes().FindRef(TargetTile->GetCoordinates());
+
+	for (int i = 0; i < MoveOutcome.MovedPieces.Num(); i++)
+	{
+		AGamePiece* PieceToMove = MoveOutcome.MovedPieces[i];
+		FVector TargetCoordinate = MoveOutcome.TargetCoordinates[i];
+		PieceToMove->Move(GameBoard->GetGridMap().FindRef(TargetCoordinate), 200);
+	}
+
+	for (AGamePiece* PieceToCapture : MoveOutcome.CapturedPieces)
+	{
+		PieceToCapture->PieceCaptured();
+	}
+
+	GameBoard->SetLastMovedPiece(Piece);
+
+	DeselectInput();
+}
+
 void AGridGamePawn::DeselectInput()
 {
-	bGamePieceSelected = false;
-	SelectedPiece = nullptr;
-	GameMode->PieceDeselected();
-}
-
-void AGridGamePawn::OnTurnStart()
-{
-	bGamePieceSelected = false;
-	SelectedPiece = nullptr;
-}
-
-void AGridGamePawn::OnPieceMoved()
-{
+	SelectedPiece->PieceDeselected();
 	bGamePieceSelected = false;
 	SelectedPiece = nullptr;
 }

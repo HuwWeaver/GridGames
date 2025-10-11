@@ -21,6 +21,10 @@ void AGameBoard::BeginPlay()
 // Creates the grid of tiles using specified AGridTile class and specified grid dimensions.
 void AGameBoard::CreateGrid(int rows, int columns, int layers, UDataTable* PieceData)
 {
+	GridRows = rows;
+	GridColumns = columns;
+	GridLayers = layers;
+
 	for (size_t Column = 0; Column < columns; Column++) {
 		for (size_t Row = 0; Row < rows; Row++) {
 			for (size_t Layer = 0; Layer < layers; Layer++) {
@@ -37,6 +41,12 @@ void AGameBoard::CreateGrid(int rows, int columns, int layers, UDataTable* Piece
 	}
 
 	PopulateBoard(PieceData);
+}
+
+void AGameBoard::SetLastMovedPiece(AGamePiece* Piece)
+{
+	LastMovedPiece = Piece;
+	PieceMoved.Broadcast();
 }
 
 // Populates the grid using the specified SetupData and MovementData DataTables with the specified GamePiece class.
@@ -58,7 +68,7 @@ void AGameBoard::PopulateBoard(UDataTable* PieceData)
 
 		AGamePiece* Piece = GetWorld()->SpawnActor<AGamePiece>(Row->PieceClass, Location, Rotation, SpawnInfo);
 
-		Piece->Init(*Row);
+		Piece->Init(*Row, this);
 	}
 
 	BoardPopulated.Broadcast();

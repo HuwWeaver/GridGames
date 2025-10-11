@@ -12,6 +12,7 @@ class UStaticMeshComponent;
 class UTextRenderComponent;
 
 class AGridTile;
+class AGameBoard;
 
 UCLASS()
 class GRIDGAMES_API AGamePiece : public AActor
@@ -29,12 +30,14 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	FPieceSetupProperties SetupProperties;
+
 	FVector CurrentCoordinate{0,0,0};
 	TArray<FVector> PastCoordinates;
 	int NumMovesMade{ 0 };
 
-	//TODO: Remove
-	FPieceSetupProperties SetupProperties;
+	TArray<FVector> ValidMoveDestinations;
+	TMap<FVector, FMoveOutcome> ValidMoveOutcomes;
 
 	UPROPERTY(EditAnywhere)
 	FPieceMovementData MovementData;
@@ -54,14 +57,25 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	
+	const FPieceSetupProperties& GetSetupProperties() const { return SetupProperties; };
 	const FVector& GetCurrentCoordinate() const { return CurrentCoordinate; };
 	const TArray<FVector>& GetPastCoordinates() const { return PastCoordinates; };
-	const FPieceSetupProperties& GetSetupProperties() const { return SetupProperties; };
+	const TArray<FVector>& GetValidMoveDestinations() const { return ValidMoveDestinations; };
+	const TMap<FVector, FMoveOutcome>& GetValidMoveOutcomes() const { return ValidMoveOutcomes; };
 	const FPieceMovementData& GetMovementData() const { return MovementData; };
 	const FName& GetPieceName() const { return PieceName; };
 	int GetNumMovesMade() const { return NumMovesMade; };
 
-	virtual void Init(const FPieceSetupProperties& SetupData);
+	virtual void Init(const FPieceSetupProperties& SetupData, AGameBoard* InGameBoard);
+
+	void PieceSelected();
+	void PieceDeselected();
+
+	void StepMove(const FPieceMovementProperties& Move);
+	void RangeMove(const FPieceMovementProperties& Move, const int& RangeLimit = -99);
+	// This function is for other types of moves that may be implemented in derived classes - usually for special moves like castling or en passant in chess.
+	virtual void OtherMove(const FPieceMovementProperties& Move) PURE_VIRTUAL(AGamePiece::OtherMove);
+
 	void Move(const AGridTile* TargetTile, const float& TileSize);
 	void PieceCaptured();
 
@@ -70,5 +84,7 @@ public:
 	void ProvidePromotionChoice(AGamePiece* Piece);
 
 	UFUNCTION(BlueprintCallable, Category = "Promotion")
-	void Promote(const TSubclassOf<AGamePiece>& NewPiece);
+	void Promote(const TSubclassOf<AGamePiece>& NewPiece) PURE_VIRTUAL(AGamePiece::Promote);
+
+	AGameBoard* GameBoard{ nullptr };
 };

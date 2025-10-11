@@ -8,6 +8,8 @@
 
 class AGridGameGameMode;
 class AGridGameCameraActor;
+class AGameBoard;
+class AGridGamePawn;
 
 UCLASS()
 class GRIDGAMES_API AGridGamePlayerController : public APlayerController
@@ -20,9 +22,12 @@ protected:
 
 public:
 	UPROPERTY(BlueprintReadOnly)
-	APawn* WhitePlayerPawn{ nullptr };
+	AGridGamePawn* WhitePlayerPawn{ nullptr };
 	UPROPERTY(BlueprintReadOnly)
-	APawn* BlackPlayerPawn{ nullptr };
+	AGridGamePawn* BlackPlayerPawn{ nullptr };
+
+	UFUNCTION()
+	void Init(AGameBoard* GameBoard, AGridGameGameMode* InGameMode);
 
 	UFUNCTION()
 	void SwitchPlayer();

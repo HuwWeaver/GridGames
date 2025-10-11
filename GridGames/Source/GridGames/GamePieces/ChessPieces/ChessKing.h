@@ -13,5 +13,7 @@ UCLASS()
 class GRIDGAMES_API AChessKing : public AChessPiece
 {
 	GENERATED_BODY()
-	
+
+private:
+	virtual void OtherMove(const FPieceMovementProperties& Move) override;
 };

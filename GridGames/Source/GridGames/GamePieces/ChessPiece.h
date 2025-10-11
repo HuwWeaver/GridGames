@@ -12,7 +12,7 @@ class GRIDGAMES_API AChessPiece : public AGamePiece
 	GENERATED_BODY()
 
 private:
-	virtual void Init(const FPieceSetupProperties& SetupData) override;
+	virtual void Init(const FPieceSetupProperties& SetupData, AGameBoard* InGameBoard) override;
 
 protected:
 	UPROPERTY(EditAnywhere)

@@ -3,9 +3,9 @@
 
 #include "ChessPiece.h"
 
-void AChessPiece::Init(const FPieceSetupProperties& SetupData)
+void AChessPiece::Init(const FPieceSetupProperties& SetupData, AGameBoard* InGameBoard)
 {
-	Super::Init(SetupData);
+	Super::Init(SetupData, InGameBoard);
 	bIsWhite = SetupData.bWhite;
 
 	if (bIsWhite && WhiteMaterial)

@@ -10,7 +10,4 @@ UCLASS()
 class GRIDGAMES_API AChessGameMode : public AGridGameGameMode
 {
 	GENERATED_BODY()
-	
-private:
-	virtual void OtherMove(AGamePiece* Piece, const FPieceMovementProperties& Move) override;
 };

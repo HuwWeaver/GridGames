@@ -9,10 +9,11 @@
 #include "GridGameGameMode.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTurnStart);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPieceMoved);
+
 
 class AGamePiece;
 class AGridTile;
+class AGridGamePlayerController;
 
 UCLASS()
 class GRIDGAMES_API AGridGameGameMode : public AGameModeBase
@@ -35,6 +36,8 @@ protected:
 
 private:
 	UFUNCTION()
+	void SetUpPlayers();
+
 	void GameStart();
 	void PreTurn();
 	void MainTurn();
@@ -45,24 +48,19 @@ protected:
 	TMap<FVector, FMoveOutcome> ValidMoveOutcomes;
 	AGamePiece* LastMovedPiece{ nullptr };
 	ETurnPhase CurrentTurnPhase;
-	AGameBoard* GameBoard{ nullptr };
 
-	void StepMove(AGamePiece* Piece, const FPieceMovementProperties& Move);
-	void RangeMove(AGamePiece* Piece, const FPieceMovementProperties& Move, const int& RangeLimit = -99);
-	// This function is for other types of moves that may be implemented in derived classes - usually for special moves like castling or en passant in chess.
-	virtual void OtherMove(AGamePiece* Piece, const FPieceMovementProperties& Move) PURE_VIRTUAL(AGridGameGameMode::OtherMove);
+	UPROPERTY()
+	AGameBoard* GameBoard{ nullptr };
+	UPROPERTY()
+	AGridGamePlayerController* PlayerController{ nullptr };
 
 	void PostTurn();
 
 public:
-	void TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile);
-	void PieceSelected(AGamePiece* Piece);
-	void PieceDeselected();
-
+	UFUNCTION()
 	void GoToPostTurn();
 
 	UPROPERTY()
 	FTurnStart TurnStart;
-	UPROPERTY()
-	FPieceMoved PieceMoved;
+
 };
