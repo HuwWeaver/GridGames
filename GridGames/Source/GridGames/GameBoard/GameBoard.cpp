@@ -43,12 +43,6 @@ void AGameBoard::CreateGrid(int rows, int columns, int layers, UDataTable* Piece
 	PopulateBoard(PieceData);
 }
 
-void AGameBoard::SetLastMovedPiece(AGamePiece* Piece)
-{
-	LastMovedPiece = Piece;
-	PieceMoved.Broadcast();
-}
-
 // Populates the grid using the specified SetupData and MovementData DataTables with the specified GamePiece class.
 // The SetupData DataTable contains the initial setup properties for each piece, such as starting coordinates and team color.
 void AGameBoard::PopulateBoard(UDataTable* PieceData)
@@ -72,6 +66,16 @@ void AGameBoard::PopulateBoard(UDataTable* PieceData)
 	}
 
 	BoardPopulated.Broadcast();
+}
+
+void AGameBoard::PieceMoved(AGamePiece* Piece)
+{
+	LastMovedPiece = Piece;
+
+	for (auto& Tile : GridMap)
+	{
+		Tile.Value->ShowValidMove(false);
+	}
 }
 
 // Called every frame

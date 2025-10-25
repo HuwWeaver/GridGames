@@ -29,12 +29,16 @@ public:
 	UFUNCTION()
 	void Init(AGameBoard* GameBoard, AGridGameGameMode* InGameMode);
 
+	bool GetIsWhite() const { return bIsWhite; };
+
 	UFUNCTION()
 	void SwitchPlayer();
 
 private:
 	bool bIsWhite{ true };
-	AGridGameGameMode* GameMode{ nullptr };
 
+	UPROPERTY()
+	AGridGameGameMode* GameMode{ nullptr };
+	UPROPERTY()
 	AGridGameCameraActor* GameCamera{ nullptr };
 };

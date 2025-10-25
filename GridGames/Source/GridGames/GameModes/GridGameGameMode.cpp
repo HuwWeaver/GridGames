@@ -10,7 +10,6 @@
 #include "Kismet/BlueprintMapLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
-// Functions to set up and start the game, such as Begin Play, CreateGrid, and PopulateBoard.
 #pragma region Game Start
 // Called when the game starts or when spawned
 void AGridGameGameMode::BeginPlay()
@@ -25,7 +24,6 @@ void AGridGameGameMode::BeginPlay()
 	}
 
 	GameBoard->BoardPopulated.AddDynamic(this, &AGridGameGameMode::SetUpPlayers);
-	GameBoard->PieceMoved.AddDynamic(this, &AGridGameGameMode::GoToPostTurn);
 	GameBoard->CreateGrid(GridRows, GridColumns, GridLayers, PiecesSetupData);
 }
 
@@ -45,11 +43,16 @@ void AGridGameGameMode::SetUpPlayers()
 
 void AGridGameGameMode::GameStart()
 {
-	MainTurn();
+	GoToMainTurn();
 }
 #pragma endregion
 
 #pragma region PreTurn
+void AGridGameGameMode::GoToPreTurn()
+{
+	PreTurn();
+}
+
 void AGridGameGameMode::PreTurn()
 {
 	CurrentTurnPhase = ETurnPhase::PreTurn;
@@ -58,12 +61,16 @@ void AGridGameGameMode::PreTurn()
 	//TODO: Determine if in Check
 	//TODO: Find & Highlight Valid Pieces
 
-	MainTurn();
+	GoToMainTurn();
 }
 #pragma endregion
 
-// Functions to handle the main actions of a turn, such as Piece Selection, Valid Moved Calculation, Movement, and Piece Deselection.
 #pragma region Main Turn
+void AGridGameGameMode::GoToMainTurn()
+{
+	MainTurn();
+}
+
 void AGridGameGameMode::MainTurn()
 {
 	CurrentTurnPhase = ETurnPhase::MainTurn;
@@ -83,8 +90,10 @@ void AGridGameGameMode::PostTurn()
 {
 	CurrentTurnPhase = ETurnPhase::PostTurn;
 
+	TurnEnd.Broadcast();
+
 	//TODO: Disable Input
 
-	PreTurn();
+	GoToPreTurn();
 }
 #pragma endregion

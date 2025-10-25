@@ -50,6 +50,7 @@ void AGamePiece::Init(const FPieceSetupProperties& SetupData, AGameBoard* InGame
 void AGamePiece::PieceSelected()
 {
 	ValidMoveDestinations.Empty();
+	ValidMoveOutcomes.Empty();
 
 	for (FPieceMovementProperties& Move : MovementData.FullMoveList)
 	{
@@ -89,15 +90,8 @@ void AGamePiece::PieceSelected()
 // It hides all valid move tiles for that game piece by calling ShowValidMove(false) on each valid tile and clears the list of valid move destinations.
 void AGamePiece::PieceDeselected()
 {
-	for (const FVector& TileCoordinate : ValidMoveDestinations)
-	{
-		if (GameBoard->GetGridMap().Contains(TileCoordinate))
-		{
-			GameBoard->GetGridMap().FindRef(TileCoordinate)->ShowValidMove(false);
-		}
-	}
-	ValidMoveDestinations.Empty();
-	ValidMoveOutcomes.Empty();
+	//ValidMoveDestinations.Empty();
+	//ValidMoveOutcomes.Empty();
 }
 
 // Step Moves are moves with a single target tile

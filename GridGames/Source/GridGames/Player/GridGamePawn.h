@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "GridGames/GridGameGlobals.h"
 #include "GridGamePawn.generated.h"
 
 class UInputComponent;
@@ -15,6 +16,7 @@ class AGamePiece;
 class AGameBoard;
 class AGridTile;
 class AGridGameGameMode;
+class AGridGamePlayerController;
 
 UCLASS()
 class GRIDGAMES_API AGridGamePawn : public APawn
@@ -47,13 +49,15 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION()
-	void Init(AGameBoard* InGameBoard, AGridGameGameMode* GameMode);
+	void Init(AGameBoard* InGameBoard, AGridGameGameMode* InGameMode);
 
 	void MoveInput(const FInputActionValue& Value);
 	void SelectInput();
 	void DeselectInput();
 
-	void TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile);
+	void CheckMoveValidity(AGamePiece* Piece, AGridTile* TargetTile);
+	UFUNCTION()
+	void MovePiece();
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bIsWhite{ true };
@@ -63,11 +67,15 @@ protected:
 	virtual void BeginPlay() override;
 
 	bool bGamePieceSelected{ false };
+	UPROPERTY()
 	AGamePiece* SelectedPiece{ nullptr };
+	FMoveOutcome CurrentMoveOutcome{};
 
 private:
 	UPROPERTY()
-	APlayerController* PlayerController{ nullptr };
+	AGridGamePlayerController* PlayerController{ nullptr };
 	UPROPERTY()
 	AGameBoard* GameBoard{ nullptr };
+	UPROPERTY()
+	AGridGameGameMode* GameMode{ nullptr };
 };

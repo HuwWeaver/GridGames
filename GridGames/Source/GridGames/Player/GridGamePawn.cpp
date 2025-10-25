@@ -8,6 +8,7 @@
 #include "Components/SceneComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "GridGames/Player/GridGamePlayerController.h"
 #include "GridGames/GameModes/GridGameGameMode.h"
 #include "GridGames/GamePieces/GamePiece.h"
 #include "GridGames/GameBoard/GridTile.h"
@@ -23,13 +24,6 @@ AGridGamePawn::AGridGamePawn()
 void AGridGamePawn::BeginPlay()
 {
 	Super::BeginPlay();
-
-	GameBoard = Cast<AGameBoard>(UGameplayStatics::GetActorOfClass(GetWorld(), AGameBoard::StaticClass()));
-	if (GameBoard == nullptr)
-	{
-		UE_LOG(LogGridGameError, Error, TEXT("GameBoard is nullptr"));
-		return;
-	}
 }
 
 // Called every frame
@@ -43,7 +37,7 @@ void AGridGamePawn::NotifyControllerChanged()
 	Super::NotifyControllerChanged();
 
 	// Add Input Mapping Context
-	PlayerController = Cast<APlayerController>(Controller);
+	PlayerController = Cast<AGridGamePlayerController>(Controller);
 	if (PlayerController)
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
@@ -73,9 +67,12 @@ void AGridGamePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 }
 
-void AGridGamePawn::Init(AGameBoard* InGameBoard, AGridGameGameMode* GameMode)
+void AGridGamePawn::Init(AGameBoard* InGameBoard, AGridGameGameMode* InGameMode)
 {
 	GameBoard = InGameBoard;
+
+	GameMode = InGameMode;
+	GameMode->TurnEnd.AddDynamic(this, &AGridGamePawn::MovePiece);
 }
 
 void AGridGamePawn::MoveInput(const FInputActionValue& Value)
@@ -94,12 +91,13 @@ void AGridGamePawn::SelectInput()
 			AGridTile* HitTile = Cast<AGridTile>(HitResult.GetActor());
 			if (HitTile)
 			{
-				TryMovePiece(SelectedPiece, HitTile);
+				CheckMoveValidity(SelectedPiece, HitTile);
 			}
         }
     }
     else
     {
+		// Find Piece
         if (PlayerController->GetHitResultUnderCursor(ECC_GameTraceChannel1, false, HitResult))
         {
             SelectedPiece = Cast<AGamePiece>(HitResult.GetActor());
@@ -118,7 +116,7 @@ void AGridGamePawn::SelectInput()
 // This function attempts to move a game piece to a target tile, checking if the move is valid based on the valid move destinations and outcomes.
 // If the target tile is not in the valid move destinations or outcomes, it logs an error and returns without moving the piece.
 // If the move is valid, it retrieves the move outcome and moves the piece(s) accordingly, capturing any pieces that are part of the outcome, before deselecting the piece and logging the completed move.
-void AGridGamePawn::TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile)
+void AGridGamePawn::CheckMoveValidity(AGamePiece* Piece, AGridTile* TargetTile)
 {
 	if (!Piece->GetValidMoveDestinations().Contains(TargetTile->GetCoordinates()))
 	{
@@ -132,21 +130,37 @@ void AGridGamePawn::TryMovePiece(AGamePiece* Piece, AGridTile* TargetTile)
 		return;
 	}
 
-	FMoveOutcome MoveOutcome = Piece->GetValidMoveOutcomes().FindRef(TargetTile->GetCoordinates());
-
-	for (int i = 0; i < MoveOutcome.MovedPieces.Num(); i++)
+	CurrentMoveOutcome = Piece->GetValidMoveOutcomes().FindRef(TargetTile->GetCoordinates());
+	if(CurrentMoveOutcome.MovedPieces.Num() != CurrentMoveOutcome.TargetCoordinates.Num())
 	{
-		AGamePiece* PieceToMove = MoveOutcome.MovedPieces[i];
-		FVector TargetCoordinate = MoveOutcome.TargetCoordinates[i];
+		UE_LOG(LogGridGameError, Error, TEXT("MovedPieces and TargetCoordinates count do not match in MoveOutcome"));
+		return;
+	}
+
+	//Move Valid - Go to Post Turn phase to Execute Move
+	GameMode->GoToPostTurn();
+}
+
+void AGridGamePawn::MovePiece()
+{
+	if (!PlayerController || PlayerController->GetIsWhite() != bIsWhite)
+	{
+		return;
+	}
+
+	for (int i = 0; i < CurrentMoveOutcome.MovedPieces.Num(); i++)
+	{
+		AGamePiece* PieceToMove = CurrentMoveOutcome.MovedPieces[i];
+		FVector TargetCoordinate = CurrentMoveOutcome.TargetCoordinates[i];
 		PieceToMove->Move(GameBoard->GetGridMap().FindRef(TargetCoordinate), 200);
 	}
 
-	for (AGamePiece* PieceToCapture : MoveOutcome.CapturedPieces)
+	for (AGamePiece* PieceToCapture : CurrentMoveOutcome.CapturedPieces)
 	{
 		PieceToCapture->PieceCaptured();
 	}
 
-	GameBoard->SetLastMovedPiece(Piece);
+	GameBoard->PieceMoved(SelectedPiece);
 
 	DeselectInput();
 }

@@ -36,7 +36,9 @@ protected:
 	TArray<FVector> PastCoordinates;
 	int NumMovesMade{ 0 };
 
+	UPROPERTY()
 	TArray<FVector> ValidMoveDestinations;
+	UPROPERTY()
 	TMap<FVector, FMoveOutcome> ValidMoveOutcomes;
 
 	UPROPERTY(EditAnywhere)

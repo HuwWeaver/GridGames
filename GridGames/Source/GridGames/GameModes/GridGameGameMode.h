@@ -6,17 +6,18 @@
 #include "GridGameTracker.h"
 #include "GameFramework/GameModeBase.h"
 #include "GameBoard/GameBoard.h"
+#include "GridGames/GameStateInterface.h"
 #include "GridGameGameMode.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTurnStart);
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTurnEnd);
 
 class AGamePiece;
 class AGridTile;
 class AGridGamePlayerController;
 
 UCLASS()
-class GRIDGAMES_API AGridGameGameMode : public AGameModeBase
+class GRIDGAMES_API AGridGameGameMode : public AGameModeBase, public IGameStateInterface
 {
 	GENERATED_BODY()	
 
@@ -39,8 +40,6 @@ private:
 	void SetUpPlayers();
 
 	void GameStart();
-	void PreTurn();
-	void MainTurn();
 
 protected:
 	GridGameTracker GameTracker{};
@@ -54,13 +53,16 @@ protected:
 	UPROPERTY()
 	AGridGamePlayerController* PlayerController{ nullptr };
 
-	void PostTurn();
-
 public:
-	UFUNCTION()
-	void GoToPostTurn();
+	void GoToPreTurn() override;
+	void PreTurn() override;
+	void GoToMainTurn() override;
+	void MainTurn() override;
+	void GoToPostTurn() override;
+	void PostTurn() override;
 
 	UPROPERTY()
 	FTurnStart TurnStart;
-
+	UPROPERTY()
+	FTurnEnd TurnEnd;
 };
