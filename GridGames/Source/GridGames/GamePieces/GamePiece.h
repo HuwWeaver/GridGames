@@ -53,8 +53,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Promotion")
 	TArray<TSubclassOf<AGamePiece>> PromotionOptions;
 
-	virtual void CheckPromotion();
-
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -80,6 +78,8 @@ public:
 
 	void Move(const AGridTile* TargetTile, const float& TileSize);
 	void PieceCaptured();
+
+	virtual bool CheckPromotion();
 
 	//No C++ Function Definition, only Blueprint Implementable Event
 	UFUNCTION(BlueprintImplementableEvent, Category = "Promotion")

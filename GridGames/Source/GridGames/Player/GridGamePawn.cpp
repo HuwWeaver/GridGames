@@ -148,6 +148,13 @@ void AGridGamePawn::MovePiece()
 		return;
 	}
 
+	//Capture Pieces
+	for (AGamePiece* PieceToCapture : CurrentMoveOutcome.CapturedPieces)
+	{
+		PieceToCapture->PieceCaptured();
+	}
+
+	//Move pieces
 	for (int i = 0; i < CurrentMoveOutcome.MovedPieces.Num(); i++)
 	{
 		AGamePiece* PieceToMove = CurrentMoveOutcome.MovedPieces[i];
@@ -155,14 +162,29 @@ void AGridGamePawn::MovePiece()
 		PieceToMove->Move(GameBoard->GetGridMap().FindRef(TargetCoordinate), 200);
 	}
 
-	for (AGamePiece* PieceToCapture : CurrentMoveOutcome.CapturedPieces)
+	GameBoard->PieceMoved(SelectedPiece);
+	DeselectInput();
+
+	//Promote pieces
+	PromotablePieces.Empty();
+	for (int i = 0; i < CurrentMoveOutcome.MovedPieces.Num(); i++)
 	{
-		PieceToCapture->PieceCaptured();
+		AGamePiece* Piece = CurrentMoveOutcome.MovedPieces[i];
+		if (Piece->CheckPromotion()) PromotablePieces.Add(Piece);
 	}
 
-	GameBoard->PieceMoved(SelectedPiece);
+	if (!PromotablePieces.IsEmpty())
+	{
+		PromotePiece();
+	}
+}
 
-	DeselectInput();
+void AGridGamePawn::PromotePiece()
+{
+	ProvidePromotionChoice(PromotablePieces[0]);
+
+	//Remove promoted piece
+	//promote next piece
 }
 
 void AGridGamePawn::DeselectInput()

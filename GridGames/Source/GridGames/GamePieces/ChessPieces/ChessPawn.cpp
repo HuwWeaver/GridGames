@@ -5,17 +5,17 @@
 #include "GridGames/GameBoard/GameBoard.h"
 #include "Kismet/KismetMathLibrary.h"
 
-void AChessPawn::CheckPromotion()
+bool AChessPawn::CheckPromotion()
 {
 	Super::CheckPromotion();
 
 	if (SetupProperties.StartingCoordinates.Y - CurrentCoordinate.Y == 6 ||
 		SetupProperties.StartingCoordinates.Y - CurrentCoordinate.Y == -6)
 	{
-		//Can promote, provide options to player
-		UE_LOG(LogTemp, Display, TEXT("Providing Promotion Choice..."));
-		ProvidePromotionChoice(this);
+		return true;
 	}
+
+	return false;
 }
 
 void AChessPawn::OtherMove(const FPieceMovementProperties& Move)

@@ -266,14 +266,13 @@ void AGamePiece::Move(const AGridTile* TargetTile, const float& TileSize)
 
 	NumMovesMade++;
 
-	CheckPromotion();
 }
 
-void AGamePiece::CheckPromotion()
+bool AGamePiece::CheckPromotion()
 {
 	if (!bPromotable || PromotionOptions.IsEmpty())
 	{
-		return;
+		return false;
 	}
 }
 

@@ -58,9 +58,15 @@ public:
 	void CheckMoveValidity(AGamePiece* Piece, AGridTile* TargetTile);
 	UFUNCTION()
 	void MovePiece();
+	UFUNCTION()
+	void PromotePiece();
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bIsWhite{ true };
+
+	//No C++ Function Definition, only Blueprint Implementable Event
+	UFUNCTION(BlueprintImplementableEvent, Category = "Promotion")
+	void ProvidePromotionChoice(AGamePiece* Piece);
 
 protected:
 	// Called when the game starts or when spawned
@@ -70,6 +76,8 @@ protected:
 	UPROPERTY()
 	AGamePiece* SelectedPiece{ nullptr };
 	FMoveOutcome CurrentMoveOutcome{};
+
+	TArray<AGamePiece*> PromotablePieces;
 
 private:
 	UPROPERTY()
