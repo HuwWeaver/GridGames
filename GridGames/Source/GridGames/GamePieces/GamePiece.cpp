@@ -33,15 +33,21 @@ void AGamePiece::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AGamePiece::Init(const FPieceSetupProperties& SetupData, AGameBoard* InGameBoard)
+void AGamePiece::Init(const bool white, const FVector startingCoords, const AGameBoard* InGameBoard)
 {
-	SetupProperties = SetupData;
-	CurrentCoordinate = SetupProperties.StartingCoordinates;
+	bIsWhite = white;
+	StartingCoordinate = startingCoords;
+	CurrentCoordinate = startingCoords;
 
 	GameBoard = InGameBoard;
 
 	PieceMesh->SetCollisionObjectType(ECC_GameTraceChannel1);
 	PieceMesh->SetSimulatePhysics(true);
+}
+
+void AGamePiece::UpdateCurrentCoordinate(const FVector& NewCoordinate)
+{
+	CurrentCoordinate = NewCoordinate;
 }
 
 // This function is called when a game piece is selected.
@@ -90,8 +96,16 @@ void AGamePiece::PieceSelected()
 // It hides all valid move tiles for that game piece by calling ShowValidMove(false) on each valid tile and clears the list of valid move destinations.
 void AGamePiece::PieceDeselected()
 {
-	//ValidMoveDestinations.Empty();
-	//ValidMoveOutcomes.Empty();
+	for (const FVector& TileCoordinate : ValidMoveDestinations)
+	{
+		if (GameBoard->GetGridMap().Contains(TileCoordinate))
+		{
+			GameBoard->GetGridMap().FindRef(TileCoordinate)->ShowValidMove(false);
+		}
+	}
+
+	ValidMoveDestinations.Empty();
+	ValidMoveOutcomes.Empty();
 }
 
 // Step Moves are moves with a single target tile
@@ -99,7 +113,7 @@ void AGamePiece::StepMove(const FPieceMovementProperties& Move)
 {
 	// Get the movement vector and adjust it based on the piece's team color (white or black).
 	FVector MovementVector = Move.MovementVector;
-	if (!GetSetupProperties().bWhite) MovementVector *= -1;
+	if (!bIsWhite) MovementVector *= -1;
 
 	// Get the target coordinate by adding the movement vector to the piece's current coordinate.
 	FVector TargetCoordinate = GetCurrentCoordinate() + MovementVector;
@@ -139,7 +153,7 @@ void AGamePiece::StepMove(const FPieceMovementProperties& Move)
 	}
 
 	// Check if the occupying piece is on the same team as the moving piece.
-	if (OccupyingPiece->GetSetupProperties().bWhite == GetSetupProperties().bWhite)
+	if (OccupyingPiece->GetIsWhite() == bIsWhite)
 	{
 		//Tile Occupied by Same Team = Invalid Move
 		return;
@@ -171,7 +185,7 @@ void AGamePiece::RangeMove(const FPieceMovementProperties& Move, const int& Rang
 {
 	// Get the movement vector and adjust it based on the piece's team color (white or black).
 	FVector MovementVector = Move.MovementVector;
-	if (GetSetupProperties().bWhite) MovementVector *= -1;
+	if (bIsWhite) MovementVector *= -1;
 
 	// Get the target coordinate by adding the movement vector to the piece's current coordinate, then reduce the remaining range.
 	FVector TargetCoordinate = GetCurrentCoordinate() + MovementVector;
@@ -228,7 +242,7 @@ void AGamePiece::RangeMove(const FPieceMovementProperties& Move, const int& Rang
 		}
 
 		// Check if the occupying piece is on the same team as the moving piece.
-		if (OccupyingPiece->GetSetupProperties().bWhite == GetSetupProperties().bWhite)
+		if (OccupyingPiece->GetIsWhite() == bIsWhite)
 		{
 			//Tile Occupied by Same Team = Invalid Move
 			return;
@@ -274,6 +288,23 @@ bool AGamePiece::CheckPromotion()
 	{
 		return false;
 	}
+
+	return true;
+}
+
+void AGamePiece::Promote(const TSubclassOf<AGamePiece>& NewPiece)
+{
+	// X and Y are swapped for first vector as grid X axis doesn't follow world X axis, but rather follows world Y (and vice versa).
+	FVector Location = FVector(CurrentCoordinate.Y * 200, CurrentCoordinate.X * 200, 0.0) + FVector(200 / 2, 200 / 2, 100);
+	FRotator Rotation = bIsWhite ? FRotator(0, 0, 0) : FRotator(0, 180, 0);
+	FActorSpawnParameters SpawnInfo;
+
+	AGamePiece* Piece = GetWorld()->SpawnActor<AGamePiece>(NewPiece, Location, Rotation, SpawnInfo);
+
+	Piece->Init(bIsWhite, StartingCoordinate, GameBoard);
+	Piece->UpdateCurrentCoordinate(CurrentCoordinate);
+
+	Destroy();
 }
 
 void AGamePiece::PieceCaptured()

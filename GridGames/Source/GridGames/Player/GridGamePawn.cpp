@@ -72,7 +72,6 @@ void AGridGamePawn::Init(AGameBoard* InGameBoard, AGridGameGameMode* InGameMode)
 	GameBoard = InGameBoard;
 
 	GameMode = InGameMode;
-	GameMode->TurnEnd.AddDynamic(this, &AGridGamePawn::MovePiece);
 }
 
 void AGridGamePawn::MoveInput(const FInputActionValue& Value)
@@ -103,7 +102,7 @@ void AGridGamePawn::SelectInput()
             SelectedPiece = Cast<AGamePiece>(HitResult.GetActor());
             if (SelectedPiece)
             {
-				if (SelectedPiece->GetSetupProperties().bWhite == bIsWhite)
+				if (SelectedPiece->GetIsWhite() == bIsWhite)
 				{
 					bGamePieceSelected = true;
 					SelectedPiece->PieceSelected();
@@ -115,7 +114,6 @@ void AGridGamePawn::SelectInput()
 
 // This function attempts to move a game piece to a target tile, checking if the move is valid based on the valid move destinations and outcomes.
 // If the target tile is not in the valid move destinations or outcomes, it logs an error and returns without moving the piece.
-// If the move is valid, it retrieves the move outcome and moves the piece(s) accordingly, capturing any pieces that are part of the outcome, before deselecting the piece and logging the completed move.
 void AGridGamePawn::CheckMoveValidity(AGamePiece* Piece, AGridTile* TargetTile)
 {
 	if (!Piece->GetValidMoveDestinations().Contains(TargetTile->GetCoordinates()))
@@ -137,8 +135,8 @@ void AGridGamePawn::CheckMoveValidity(AGamePiece* Piece, AGridTile* TargetTile)
 		return;
 	}
 
-	//Move Valid - Go to Post Turn phase to Execute Move
-	GameMode->GoToPostTurn();
+	//Move Valid - Execute Move
+	MovePiece();
 }
 
 void AGridGamePawn::MovePiece()
@@ -175,16 +173,26 @@ void AGridGamePawn::MovePiece()
 
 	if (!PromotablePieces.IsEmpty())
 	{
-		PromotePiece();
+		PromotePieces();
+	}
+	else
+	{
+		GameMode->GoToPostTurn();
 	}
 }
 
-void AGridGamePawn::PromotePiece()
+void AGridGamePawn::PromotePieces()
 {
-	ProvidePromotionChoice(PromotablePieces[0]);
+	if (!PromotablePieces.IsEmpty())
+	{
+		ProvidePromotionChoice(PromotablePieces[0]);
 
-	//Remove promoted piece
-	//promote next piece
+		PromotablePieces.RemoveAt(0);
+	}
+	else
+	{
+		GameMode->GoToPostTurn();
+	}
 }
 
 void AGridGamePawn::DeselectInput()

@@ -9,8 +9,8 @@ bool AChessPawn::CheckPromotion()
 {
 	Super::CheckPromotion();
 
-	if (SetupProperties.StartingCoordinates.Y - CurrentCoordinate.Y == 6 ||
-		SetupProperties.StartingCoordinates.Y - CurrentCoordinate.Y == -6)
+	if (StartingCoordinate.Y - CurrentCoordinate.Y == 6 ||
+		StartingCoordinate.Y - CurrentCoordinate.Y == -6)
 	{
 		return true;
 	}
@@ -25,7 +25,7 @@ void AChessPawn::OtherMove(const FPieceMovementProperties& Move)
 		if (GetNumMovesMade() < 1)
 		{
 			FVector MovementVector = Move.MovementVector;
-			if (!GetSetupProperties().bWhite) MovementVector *= -1;
+			if (!bIsWhite) MovementVector *= -1;
 
 			//Normalize to get intermediary tile
 			MovementVector.Normalize();
@@ -44,7 +44,7 @@ void AChessPawn::OtherMove(const FPieceMovementProperties& Move)
 	else if (Move.MoveName == "Capture")
 	{
 		FVector MovementVector = Move.MovementVector;
-		if (!GetSetupProperties().bWhite) MovementVector *= -1;
+		if (!bIsWhite) MovementVector *= -1;
 
 		FVector TargetCoordinate = GetCurrentCoordinate() + MovementVector;
 		//Target Tile is out of bounds = Invalid Move
@@ -66,7 +66,7 @@ void AChessPawn::OtherMove(const FPieceMovementProperties& Move)
 			}
 
 			//Tile Occupied by Opposing Team = Standard Capture, Valid Move
-			if (OccupyingPiece->GetSetupProperties().bWhite != GetSetupProperties().bWhite)
+			if (OccupyingPiece->GetIsWhite() != bIsWhite)
 			{
 				TArray<AGamePiece*> MovedPieces;
 				MovedPieces.Add(this);
@@ -107,7 +107,7 @@ void AChessPawn::OtherMove(const FPieceMovementProperties& Move)
 			}
 
 			//Tile Occupied by Same Team - Invalid Move
-			if (OccupyingPiece->GetSetupProperties().bWhite == GetSetupProperties().bWhite)
+			if (OccupyingPiece->GetIsWhite() != bIsWhite)
 			{
 
 				return;

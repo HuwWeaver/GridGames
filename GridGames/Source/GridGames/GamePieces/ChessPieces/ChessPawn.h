@@ -12,6 +12,6 @@ class GRIDGAMES_API AChessPawn : public AChessPiece
 	GENERATED_BODY()
 
 private:
-	virtual void CheckPromotion() override;
+	virtual bool CheckPromotion() override;
 	virtual void OtherMove(const FPieceMovementProperties& Move) override;
 };

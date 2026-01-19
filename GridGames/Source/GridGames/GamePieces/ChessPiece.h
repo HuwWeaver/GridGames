@@ -12,11 +12,9 @@ class GRIDGAMES_API AChessPiece : public AGamePiece
 	GENERATED_BODY()
 
 private:
-	virtual void Init(const FPieceSetupProperties& SetupData, AGameBoard* InGameBoard) override;
+	virtual void Init(const bool white, const FVector startingCoords, const AGameBoard* InGameBoard) override;
 
 protected:
-	UPROPERTY(EditAnywhere)
-	bool bIsWhite{ true };
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UMaterialInstance* WhiteMaterial{ nullptr };

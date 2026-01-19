@@ -29,9 +29,9 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	FPieceSetupProperties SetupProperties;
-
+	
+	bool bIsWhite{ true };
+	FVector StartingCoordinate{ 0,0,0 };
 	FVector CurrentCoordinate{0,0,0};
 	TArray<FVector> PastCoordinates;
 	int NumMovesMade{ 0 };
@@ -53,11 +53,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Promotion")
 	TArray<TSubclassOf<AGamePiece>> PromotionOptions;
 
+	const AGameBoard* GameBoard{ nullptr };
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	
-	const FPieceSetupProperties& GetSetupProperties() const { return SetupProperties; };
+	bool GetIsWhite() const { return bIsWhite; };
+	const FVector& GetStartingCoordinate() const { return StartingCoordinate; };
 	const FVector& GetCurrentCoordinate() const { return CurrentCoordinate; };
 	const TArray<FVector>& GetPastCoordinates() const { return PastCoordinates; };
 	const TArray<FVector>& GetValidMoveDestinations() const { return ValidMoveDestinations; };
@@ -66,7 +69,8 @@ public:
 	const FName& GetPieceName() const { return PieceName; };
 	int GetNumMovesMade() const { return NumMovesMade; };
 
-	virtual void Init(const FPieceSetupProperties& SetupData, AGameBoard* InGameBoard);
+	virtual void Init(const bool white, const FVector startingCoords, const AGameBoard* InGameBoard);
+	void UpdateCurrentCoordinate(const FVector& NewCoordinate);
 
 	void PieceSelected();
 	void PieceDeselected();
@@ -86,7 +90,5 @@ public:
 	void ProvidePromotionChoice(AGamePiece* Piece);
 
 	UFUNCTION(BlueprintCallable, Category = "Promotion")
-	void Promote(const TSubclassOf<AGamePiece>& NewPiece) PURE_VIRTUAL(AGamePiece::Promote);
-
-	AGameBoard* GameBoard{ nullptr };
+	void Promote(const TSubclassOf<AGamePiece>& NewPiece);
 };

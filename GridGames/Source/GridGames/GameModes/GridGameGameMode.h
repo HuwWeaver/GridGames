@@ -10,7 +10,6 @@
 #include "GridGameGameMode.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTurnStart);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTurnEnd);
 
 class AGamePiece;
 class AGridTile;
@@ -35,23 +34,18 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Pieces")
 	UDataTable* PiecesSetupData;
 
-private:
-	UFUNCTION()
-	void SetUpPlayers();
-
-	void GameStart();
-
-protected:
-	GridGameTracker GameTracker{};
-	TArray<FVector> ValidMoveDestinations;
-	TMap<FVector, FMoveOutcome> ValidMoveOutcomes;
-	AGamePiece* LastMovedPiece{ nullptr };
 	ETurnPhase CurrentTurnPhase;
 
 	UPROPERTY()
 	AGameBoard* GameBoard{ nullptr };
 	UPROPERTY()
 	AGridGamePlayerController* PlayerController{ nullptr };
+
+private:
+	UFUNCTION()
+	void SetUpPlayers();
+
+	void GameStart();
 
 public:
 	void GoToPreTurn() override;
@@ -63,6 +57,4 @@ public:
 
 	UPROPERTY()
 	FTurnStart TurnStart;
-	UPROPERTY()
-	FTurnEnd TurnEnd;
 };

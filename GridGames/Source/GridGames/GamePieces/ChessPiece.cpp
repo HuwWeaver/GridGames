@@ -3,10 +3,10 @@
 
 #include "ChessPiece.h"
 
-void AChessPiece::Init(const FPieceSetupProperties& SetupData, AGameBoard* InGameBoard)
+void AChessPiece::Init(const bool white, const FVector startingCoords, const AGameBoard* InGameBoard)
 {
-	Super::Init(SetupData, InGameBoard);
-	bIsWhite = SetupData.bWhite;
+	Super::Init(white, startingCoords, InGameBoard);
+	bIsWhite = white;
 
 	if (bIsWhite && WhiteMaterial)
 	{

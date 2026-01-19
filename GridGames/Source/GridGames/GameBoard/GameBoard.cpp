@@ -62,7 +62,7 @@ void AGameBoard::PopulateBoard(UDataTable* PieceData)
 
 		AGamePiece* Piece = GetWorld()->SpawnActor<AGamePiece>(Row->PieceClass, Location, Rotation, SpawnInfo);
 
-		Piece->Init(*Row, this);
+		Piece->Init(Row->bWhite, Row->StartingCoordinates, this);
 	}
 
 	BoardPopulated.Broadcast();

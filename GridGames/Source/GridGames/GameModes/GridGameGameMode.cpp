@@ -90,11 +90,8 @@ void AGridGameGameMode::PostTurn()
 {
 	CurrentTurnPhase = ETurnPhase::PostTurn;
 
-	TurnEnd.Broadcast();
-
 	//TODO: Disable Input
 
-	//TODO: this needs to be after promotion has happened, ie. sent from promoter instead
 	GoToPreTurn();
 }
 #pragma endregion

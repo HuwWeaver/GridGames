@@ -58,8 +58,8 @@ public:
 	void CheckMoveValidity(AGamePiece* Piece, AGridTile* TargetTile);
 	UFUNCTION()
 	void MovePiece();
-	UFUNCTION()
-	void PromotePiece();
+	UFUNCTION(BlueprintCallable)
+	void PromotePieces();
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bIsWhite{ true };

@@ -12,7 +12,7 @@ void AChessKing::OtherMove(const FPieceMovementProperties& Move)
 		{
 			FVector NormalizedMovementVector = Move.MovementVector;
 			NormalizedMovementVector.Normalize();
-			if (!GetSetupProperties().bWhite) NormalizedMovementVector *= -1;
+			if (!bIsWhite) NormalizedMovementVector *= -1;
 
 			for (int i = 1; i <= GameBoard->GetGridColumns(); i++)
 			{
@@ -34,7 +34,7 @@ void AChessKing::OtherMove(const FPieceMovementProperties& Move)
 				AGamePiece* OccupyingPiece = TargetTile.GetOccupyingPiece();
 
 				//Tile Occupied by Opposing Team = Invalid Move
-				if (OccupyingPiece->GetSetupProperties().bWhite != GetSetupProperties().bWhite)
+				if (OccupyingPiece->GetIsWhite() != bIsWhite)
 				{
 
 					return;
@@ -53,7 +53,7 @@ void AChessKing::OtherMove(const FPieceMovementProperties& Move)
 					TArray<FVector> TargetCoordinates;
 
 					FVector KingMovementVector = Move.MovementVector;
-					if (!GetSetupProperties().bWhite) KingMovementVector *= -1;
+					if (!bIsWhite) KingMovementVector *= -1;
 					FVector KingTargetCoordinate = GetCurrentCoordinate() + KingMovementVector;
 					MovedPieces.Add(this);
 					TargetCoordinates.Add(KingTargetCoordinate);
